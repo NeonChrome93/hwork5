@@ -37,12 +37,12 @@ export const postsRepository = {
     updatePosts(postId: string, newUpdateRequest: updatePostType) {
         let postUpdate = db.posts.find(p => p.id === postId)
         if (postUpdate) {
-            postUpdate.title = newUpdateRequest.title,
-                postUpdate.shortDescription = newUpdateRequest.shortDescription,
-                postUpdate.content = newUpdateRequest.content,
+            postUpdate.title = newUpdateRequest.title
+                postUpdate.shortDescription = newUpdateRequest.shortDescription
+                postUpdate.content = newUpdateRequest.content
                 postUpdate.blogId = newUpdateRequest.blogId
             return true
-        } else {
+        } else {     
             return false
         }
     },
