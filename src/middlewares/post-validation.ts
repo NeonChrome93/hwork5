@@ -12,7 +12,7 @@ export const validationCreateUpdatePost = [
     body('blogId').notEmpty().withMessage('blogId is required'),
     body('blogId').isString().trim().withMessage('blogId should be string'),
     body('blogId').isString().custom((value) => {
-        let postUpdate = db.posts.find(p => p.id === value)
+        let postUpdate = db.blogs.find(p => p.id === value)
         if (!postUpdate) {
             throw new Error('blog not found');
         }
