@@ -2,7 +2,7 @@ import {Request, Response, NextFunction} from "express";
 import {ErrorFormatter, validationResult} from "express-validator";
 import {errorType} from "../models/error-models";
 
-export const inputValidationMiddleware = function (req: Request, res: Response, next: NextFunction) {
+export const inputValidationMiddleware =  (req: Request, res: Response, next: NextFunction) => {
 
     const errFormat: ErrorFormatter<unknown> = (type) => {
         return {
