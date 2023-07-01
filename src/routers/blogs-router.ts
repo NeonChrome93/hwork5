@@ -8,14 +8,14 @@ export const blogsRouter = Router({})
 
 blogsRouter.get('/', (req: Request, res: Response) => {
     let arr = blogRepository.readBlogs();
-    res.send(arr);
+    res.status(200).send(arr);
 })
 
 blogsRouter.get('/:id', (req: Request, res: Response) => {
     const blogId = req.params.id
     let foundId = blogRepository.readBlogsId(blogId);
     if (foundId) {
-        res.send(foundId)
+        res.status(200).send(foundId)
     } else res.sendStatus(404)
 
 })

@@ -11,15 +11,11 @@ const parserMiddle = bodyParser({});
 
 
 
-
-
-
-
 app.use(parserMiddle)
 
-app.use("/posts", postsRouter)
-app.use("/blogs", blogsRouter)
-app.use("/testing", testingRouters)
+app.use('/blogs', blogsRouter)
+app.use('/posts', postsRouter)
+app.use('/testing/all-data', testingRouters)
 
 
 

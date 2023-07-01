@@ -6,7 +6,7 @@ export const testingRouters = Router({});
 
 
 
-testingRouters.delete('/all-data', (req: Request, res: Response) => {
+testingRouters.delete('/', (req: Request, res: Response) => {
     blogRepository.deleteAllBlogs();
     postsRepository.deleteAllPosts()
     res.sendStatus(204)
