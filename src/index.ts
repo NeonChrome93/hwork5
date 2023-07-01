@@ -19,7 +19,7 @@ app.use(parserMiddle)
 
 app.use("/posts", postsRouter)
 app.use("/blogs", blogsRouter)
-app.use("/", testingRouters)
+app.use("/testing", testingRouters)
 
 
 
