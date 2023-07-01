@@ -1,0 +1,7 @@
+/dist
+/node-modules
+# Project exclude paths
+/_tests_/blog-tests.js
+/_tests_/post-tests.js
+/node_modules/
+/src/index.js
