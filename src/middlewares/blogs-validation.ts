@@ -9,5 +9,6 @@ export const validationCreateUpdateBlog = [
     body('websiteUrl').notEmpty().withMessage('websiteUrl is required'),
     body('websiteUrl').isURL().withMessage('websiteUrl must be URL'),
     body('websiteUrl').isString().trim().isLength({max: 100}).withMessage('websiteUrl max length 100'),
+
     inputValidationMiddleware
     ]
