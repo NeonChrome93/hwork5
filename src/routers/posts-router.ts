@@ -26,7 +26,7 @@ postsRouter.get('/:id', (req: Request, res: Response) => {
 postsRouter.post('/',
     authGuardMiddleware,
     ...validationCreateUpdatePost,
-    (req: Request, res: Response) => {
+     (req: Request, res: Response) => {
     const newPosts = postsRepository.createPost(req.body)
     res.status(201).send(newPosts)
 

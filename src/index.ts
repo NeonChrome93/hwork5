@@ -1,24 +1,8 @@
-import express, {NextFunction, Request, Response, Router} from 'express'
-import bodyParser from "body-parser";
-import {postsRouter} from "./routers/posts-router";
-import {blogsRouter} from "./routers/blogs-router";
-import {testingRouters} from "./routers/testing-routers";
+import {app} from "./app";
+import {blogCollection, runDatabase} from "./db/database";
+import {randomUUID} from "crypto";
 
-const app = express();
 const port = process.env.PORT || 5000;
-
-const parserMiddle = bodyParser({});
-
-
-
-app.use(parserMiddle)
-
-app.use('/blogs', blogsRouter)
-app.use('/posts', postsRouter)
-app.use('/testing/all-data', testingRouters)
-
-
-
 
 
 //app.get('/products/:title', (req: Request, res : Response) => {
@@ -33,6 +17,16 @@ app.use('/testing/all-data', testingRouters)
 
 
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-})
+// app.listen(port, () => {
+//     console.log(`Example app listening on port ${port}`)
+// })
+
+const startApp = async () => {
+
+    await runDatabase()
+    app.listen(port, () => {
+        console.log(`Example app listening on port ${port}`)
+    })
+};
+
+startApp();

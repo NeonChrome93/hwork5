@@ -6,7 +6,7 @@ type dbType = {
     posts: postType[]
 }
 
-export const db: dbType = {
+export const dbLocal: dbType = {
     blogs: [],
     posts: [],
 }

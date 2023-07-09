@@ -1,5 +1,5 @@
 import {createPostType, postType, updatePostType} from "../models/post-models";
-import {db} from "../db/db";
+import {dbLocal} from "../db/db-local";
 import {randomUUID} from "crypto";
 
 
@@ -7,20 +7,20 @@ export const postsRepository = {
 
     readPosts() {
 
-        return db.posts
+        return dbLocal.posts
 
     },
 
 
-    readPostId(postId: string) {
-        let findId = db.posts.find(p => p.id === postId)
+     readPostId(postId: string) {
+        let findId = dbLocal.posts.find(p => p.id === postId)
         return findId
 
     },
 
-    createPost(newPostFromRequest: createPostType) {
+     createPost(newPostFromRequest: createPostType) {
         const newId = randomUUID().toString();
-        const blog = db.blogs.find(b => b.id === newPostFromRequest.blogId)
+        const blog = dbLocal.blogs.find(b => b.id === newPostFromRequest.blogId)
         if(!blog) return false
         const newPost: postType = {
             id: newId,
@@ -30,12 +30,12 @@ export const postsRepository = {
             blogId: newPostFromRequest.blogId,
             blogName: blog.name,
         }
-        db.posts.push(newPost)
+        dbLocal.posts.push(newPost)
         return newPost
     },
 
     updatePosts(postId: string, newUpdateRequest: updatePostType) {
-        let postUpdate = db.posts.find(p => p.id === postId)
+        let postUpdate = dbLocal.posts.find(p => p.id === postId)
         if (postUpdate) {
             postUpdate.title = newUpdateRequest.title
                 postUpdate.shortDescription = newUpdateRequest.shortDescription
@@ -49,16 +49,16 @@ export const postsRepository = {
 
 
     deletePosts(postId: string) {
-        const deletePost = db.posts.find(el => el.id === postId)
+        const deletePost = dbLocal.posts.find(el => el.id === postId)
         if (deletePost) {
-            db.posts = db.posts.filter(el => el.id !== deletePost.id);
+            dbLocal.posts = dbLocal.posts.filter(el => el.id !== deletePost.id);
             return true;
         } else return false
 
     },
 
     deleteAllPosts() {
-        db.posts = [];
+        dbLocal.posts = [];
         return true
     }
 
