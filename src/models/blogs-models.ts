@@ -1,9 +1,11 @@
 export type blogsType =
     {
-    "id": string,
-    "name": string,
-    "description": string,
-    "websiteUrl": string
+        "id": string,
+        "name": string,
+        "description": string,
+        "websiteUrl": string,
+        "createdAt": string,
+        "isMembership": true
     }
 
 export type createBlogType =

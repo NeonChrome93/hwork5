@@ -1,7 +1,7 @@
 
-import {blogsType, createBlogType, updateBlogType} from "../models/blogs-models";
+import {blogsType, createBlogType, updateBlogType} from "../../models/blogs-models";
 import {randomUUID} from "crypto";
-import {blogCollection, } from "../db/database";
+import {blogCollection, } from "../../db/database";
 
 
 
@@ -31,12 +31,14 @@ import {blogCollection, } from "../db/database";
 
     async createBlog (newBlogFromRequest: createBlogType) : Promise<blogsType> {
         const newId = randomUUID()
-
+        const dateNow = new Date()
         const newBlog: blogsType = {
             id: newId,
             name: newBlogFromRequest.name,
             description: newBlogFromRequest.description,
-            websiteUrl: newBlogFromRequest.websiteUrl
+            websiteUrl: newBlogFromRequest.websiteUrl,
+            createdAt: dateNow.toISOString(),
+            isMembership: true
         }
         //TODO save in database
         // dbLocal.blogs.push(newBlog)
@@ -45,7 +47,7 @@ import {blogCollection, } from "../db/database";
     },
 
    async updateBlogs(id: string ,newUpdateRequest :updateBlogType) : Promise<boolean> {
-        let blogUpdate = blogCollection.findOne({id: id}, {projection: {_id: false}})
+        let blogUpdate = await blogCollection.findOne({id: id}, {projection: {_id: false}})
         if (blogUpdate) {
             // blogUpdate.name = newUpdateRequest.name,
             // blogUpdate.description = newUpdateRequest.description,

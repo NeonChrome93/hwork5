@@ -1,5 +1,5 @@
-import {createPostType, postType, updatePostType} from "../models/post-models";
-import {dbLocal} from "../db/db-local";
+import {createPostType, postType, updatePostType} from "../../models/post-models";
+import {dbLocal} from "../../db/db-local";
 import {randomUUID} from "crypto";
 
 
@@ -20,6 +20,7 @@ export const postsRepository = {
 
      createPost(newPostFromRequest: createPostType) {
         const newId = randomUUID().toString();
+         const dateNow = new Date()
         const blog = dbLocal.blogs.find(b => b.id === newPostFromRequest.blogId)
         if(!blog) return false
         const newPost: postType = {
@@ -29,6 +30,8 @@ export const postsRepository = {
             content: newPostFromRequest.content,
             blogId: newPostFromRequest.blogId,
             blogName: blog.name,
+            createdAt: dateNow.toISOString()
+
         }
         dbLocal.posts.push(newPost)
         return newPost

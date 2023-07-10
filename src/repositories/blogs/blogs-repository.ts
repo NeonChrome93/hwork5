@@ -1,5 +1,5 @@
-import {dbLocal} from "../db/db-local";
-import {blogsType, createBlogType, updateBlogType} from "../models/blogs-models";
+import {dbLocal} from "../../db/db-local";
+import {blogsType, createBlogType, updateBlogType} from "../../models/blogs-models";
 import {randomUUID} from "crypto";
 
 
@@ -28,12 +28,14 @@ import {randomUUID} from "crypto";
 
      createBlog (newBlogFromRequest: createBlogType) : blogsType {
         const newId = randomUUID().toString();
-
+         const dateNow = new Date()
         const newBlog: blogsType = {
             id: newId,
             name: newBlogFromRequest.name,
             description: newBlogFromRequest.description,
-            websiteUrl: newBlogFromRequest.websiteUrl
+            websiteUrl: newBlogFromRequest.websiteUrl,
+            createdAt: dateNow.toISOString(),
+            isMembership: true
         }
         //TODO save in database
         dbLocal.blogs.push(newBlog)

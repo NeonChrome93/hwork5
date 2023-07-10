@@ -1,5 +1,5 @@
 import {Request, Response, Router } from "express";
-import {blogRepository} from "../repositories/blogs-repository-database";
+import {blogRepository} from "../repositories/blogs/blogs-repository-database";
 import {authGuardMiddleware} from "../middlewares/auth";
 import {validationCreateUpdateBlog} from "../middlewares/blogs-validation";
 import {blogsType} from "../models/blogs-models";
@@ -12,14 +12,14 @@ blogsRouter.get('/', async (req: Request, res: Response) => {
     res.status(200).send(arr);
 })
 
-// blogsRouter.get('/:id', async (req: Request, res: Response) => {
-//     const blogId = req.params.id
-//     let foundId = await blogRepository.readBlogsId(blogId);
-//     if (foundId) {
-//         res.status(200).send(foundId)
-//     } else res.sendStatus(404)
-//
-// })
+blogsRouter.get('/:id', async (req: Request, res: Response) => {
+    const blogId = req.params.id
+    let foundId = await blogRepository.readBlogsId(blogId);
+    if (foundId) {
+        res.status(200).send(foundId)
+    } else res.sendStatus(404)
+})
+
 
  blogsRouter.post('/',
     authGuardMiddleware,
