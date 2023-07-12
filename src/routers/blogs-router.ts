@@ -2,7 +2,7 @@ import {Request, Response, Router } from "express";
 import {blogRepository} from "../repositories/blogs/blogs-repository-database";
 import {authGuardMiddleware} from "../middlewares/auth";
 import {validationCreateUpdateBlog} from "../middlewares/blogs-validation";
-import {blogsType} from "../models/blogs-models";
+import {BlogsType} from "../models/blogs-models/blogs-models-database";
 
 
 export const blogsRouter = Router({})
@@ -25,7 +25,7 @@ blogsRouter.get('/:id', async (req: Request, res: Response) => {
     authGuardMiddleware,
     ...validationCreateUpdateBlog,
      async (req: Request, res: Response) => {
-    const newPosts : blogsType = await blogRepository.createBlog(req.body)
+    const newPosts : BlogsType = await blogRepository.createBlog(req.body)
     res.status(201).send(newPosts)
 
 

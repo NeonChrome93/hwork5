@@ -5,3 +5,4 @@
 /_tests_/post-tests.js
 /node_modules/
 /src/index.js
+.env

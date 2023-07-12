@@ -57,5 +57,5 @@ describe('Post API', () => {
         //await request(app).delete(`/blogs/${blogs.body.id}`).set(headers).send(updateBlog).expect(204)
     })
 
-
+//add negative tests //add auth tests
 })

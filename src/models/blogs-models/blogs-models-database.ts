@@ -1,12 +1,23 @@
-export type blogsType =
+import {WithId} from "mongodb";
+
+export type BlogsType =
     {
-        "id": string,
         "name": string,
         "description": string,
         "websiteUrl": string,
         "createdAt": string,
-        "isMembership": true
+        "isMembership": boolean
     }
+export type blogsOutputType =
+    {    "id": string,
+        "name": string,
+        "description": string,
+        "websiteUrl": string,
+        "createdAt": string,
+        "isMembership": boolean
+    }
+
+ export type mongoType = WithId<BlogsType>
 
 export type createBlogType =
     {
