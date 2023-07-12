@@ -11,7 +11,7 @@ export type PostType = {
     "createdAt": string
 }
 
-export type postOutputType = {
+export type PostOutputType = {
     "id": string,
     "title": string,
     "shortDescription": string,
@@ -31,7 +31,7 @@ export type createPostType = {
 
 }
 
-export type updatePostType = {
+export type UpdatePostType = {
     "title": string,
     "shortDescription": string,
     "content": string,

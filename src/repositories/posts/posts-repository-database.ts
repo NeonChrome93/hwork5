@@ -1,13 +1,10 @@
 
-import {randomUUID} from "crypto";
-import {blogCollection, postCollection} from "../../db/database";
-
+import { postCollection} from "../../db/database";
 import {
     createPostType,
-    mongoTypePost,
-    postOutputType,
+    PostOutputType,
     PostType,
-    updatePostType
+    UpdatePostType
 } from "../../models/posts-models/post-models-databse";
 import {ObjectId} from "mongodb";
 import {blogRepository} from "../blogs/blogs-repository-database";
@@ -15,7 +12,7 @@ import {blogRepository} from "../blogs/blogs-repository-database";
 
 export const postsRepository = {
 
-   async readPosts() :Promise<postOutputType[]> {
+   async readPosts() :Promise<PostOutputType[]> {
 
        const posts = await postCollection.find({}).toArray()
 
@@ -54,8 +51,8 @@ export const postsRepository = {
         }
     },
 
-    async createPost(newPostFromRequest: createPostType) :Promise <postOutputType | boolean> {
-        const newId = randomUUID()
+    async createPost(newPostFromRequest: createPostType) :Promise <PostOutputType | boolean> {
+       // const newId = randomUUID()
         const dateNow = new Date()
 
 
@@ -83,7 +80,7 @@ export const postsRepository = {
         }
     },
 
-    async updatePosts(postId: string, newUpdateRequest: updatePostType) :Promise<boolean> {
+    async updatePosts(postId: string, newUpdateRequest: UpdatePostType) :Promise<boolean> {
         let postUpdate = await this.readPostId(postId);//await postCollection.findOne({id: postId}, {projection: {_id: false}})
         if (postUpdate) { //ry
             // postUpdate.title = newUpdateRequest.title

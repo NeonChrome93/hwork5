@@ -1,5 +1,5 @@
 
-import {blogsOutputType, BlogsType, createBlogType, mongoType, updateBlogType} from "../../models/blogs-models/blogs-models-database";
+import {BlogsOutputType, BlogsType, CreateBlogType, mongoType, UpdateBlogType} from "../../models/blogs-models/blogs-models-database";
 import {randomUUID} from "crypto";
 import {blogCollection, } from "../../db/database";
 import {ObjectId} from "mongodb";
@@ -11,7 +11,7 @@ import {ObjectId} from "mongodb";
     // updateBlog(updateBlogDto){
  export const blogRepository = {
 
-    async readBlogs(): Promise<blogsOutputType[]> {
+    async readBlogs(): Promise<BlogsOutputType[]> {
 
         // let  start = performance.now()
         // while (performance.now() - start < 10000){
@@ -53,7 +53,7 @@ import {ObjectId} from "mongodb";
         }
     },
 
-    async createBlog (newBlogFromRequest: createBlogType) : Promise<blogsOutputType> {
+    async createBlog (newBlogFromRequest: CreateBlogType) : Promise<BlogsOutputType> {
         //const newId = randomUUID()
         const dateNow = new Date()
         const newBlog: BlogsType = {
@@ -74,7 +74,7 @@ import {ObjectId} from "mongodb";
     },
 
 
-   async updateBlogs(id: string ,newUpdateRequest :updateBlogType) : Promise<boolean> {
+   async updateBlogs(id: string ,newUpdateRequest :UpdateBlogType) : Promise<boolean> {
         let blogUpdate: mongoType | null = await blogCollection.findOne({_id: new ObjectId(id)})
 
         if (blogUpdate) {

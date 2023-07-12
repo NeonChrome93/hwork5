@@ -8,7 +8,7 @@ export type BlogsType =
         "createdAt": string,
         "isMembership": boolean
     }
-export type blogsOutputType =
+export type BlogsOutputType =
     {    "id": string,
         "name": string,
         "description": string,
@@ -19,14 +19,14 @@ export type blogsOutputType =
 
  export type mongoType = WithId<BlogsType>
 
-export type createBlogType =
+export type CreateBlogType =
     {
         "name": string,
         "description": string,
         "websiteUrl": "https://BUVWX92pD98RaWgA2Pfp.mnHdP4UQzM.VpHJH3Km6XESXjcc88RsTtI24bRhL1qST5tAOELsb2h35cPDBoAFK0WBVMKy"
     }
 
-export type updateBlogType =
+export type UpdateBlogType =
     {
         "name": string,
         "description": string,
