@@ -3,6 +3,8 @@ import {BlogsOutputType, BlogsType, CreateBlogType, mongoType, UpdateBlogType} f
 import {randomUUID} from "crypto";
 import {blogCollection, } from "../../db/database";
 import {ObjectId} from "mongodb";
+import {QueryPaginationType} from "../../middlewares/pagination";
+import {PaginationModels} from "../../models/pagination-models";
 
 
 
@@ -11,25 +13,31 @@ import {ObjectId} from "mongodb";
     // updateBlog(updateBlogDto){
  export const blogRepository = {
 
-    async readBlogs(): Promise<BlogsOutputType[]> {
+    async readBlogs(pagination: QueryPaginationType): Promise<PaginationModels<BlogsOutputType[]>> {
 
-        // let  start = performance.now()
-        // while (performance.now() - start < 10000){
-        // console.log(performance.now() - start)
-        // }
-        const blogs = await blogCollection.find({}).toArray();
+        const filter = {name: {$regex: pagination.searchNameTerm, $options: 'i'}}
 
-        return blogs.map((b) => {
-            return {
+        const blogs = await blogCollection.find(filter).sort({[pagination.sortBy]: pagination.sortDirection})
+            .skip(pagination.skip).limit(pagination.pageSize).toArray();
+
+        const totalCount = await blogCollection.countDocuments(filter)
+        const items = blogs.map((b) => ({
                 id: b._id.toString(),
                 name: b.name,
                 description: b.description,
                 websiteUrl: b.websiteUrl,
                 createdAt: b.createdAt,
                 isMembership: b.isMembership
-            }
-        })
 
+        }))
+        const pagesCount = Math.ceil(totalCount / pagination.pageSize);
+        return {
+            pagesCount: pagesCount === 0 ? 1 : pagesCount,
+            page: pagination.pageNumber,
+            pageSize: pagination.pageSize,
+            totalCount,
+            items
+        }
     },
 
 

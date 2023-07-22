@@ -1,5 +1,5 @@
 
-import { postCollection} from "../../db/database";
+import {blogCollection, postCollection} from "../../db/database";
 import {
     createPostType,
     PostOutputType,
@@ -8,16 +8,24 @@ import {
 } from "../../models/posts-models/post-models-databse";
 import {ObjectId} from "mongodb";
 import {blogRepository} from "../blogs/blogs-repository-database";
+import {QueryPaginationType} from "../../middlewares/pagination";
+import {PaginationModels} from "../../models/pagination-models";
 
 
 export const postsRepository = {
 
-   async readPosts() :Promise<PostOutputType[]> {
+   async readPosts(pagination: QueryPaginationType): Promise<PaginationModels<PostOutputType[]>> {
 
-       const posts = await postCollection.find({}).toArray()
+       const posts = await postCollection
+           .find({})
+           .sort({[pagination.sortBy]: pagination.sortDirection})
+           .skip(pagination.skip)
+           .limit(pagination.pageSize)
+           .toArray()
 
-    return posts.map((p) => {
-        return {
+       const totalCount = await postCollection.countDocuments()
+       const items = posts.map((p) => ({
+
             id: p._id.toString(),
             title: p.title,
             shortDescription: p.shortDescription,
@@ -26,8 +34,16 @@ export const postsRepository = {
             blogName: p.blogName,
             createdAt: p.createdAt
 
-            }
-        })
+            }))
+       const pagesCount = Math.ceil(totalCount / pagination.pageSize);
+       return {
+           pagesCount: pagesCount === 0 ? 1 : pagesCount,
+           page: pagination.pageNumber,
+           pageSize: pagination.pageSize,
+           totalCount,
+           items
+       }
+
 
    },
 

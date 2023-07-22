@@ -23,12 +23,12 @@ export type CreateBlogType =
     {
         "name": string,
         "description": string,
-        "websiteUrl": "https://BUVWX92pD98RaWgA2Pfp.mnHdP4UQzM.VpHJH3Km6XESXjcc88RsTtI24bRhL1qST5tAOELsb2h35cPDBoAFK0WBVMKy"
+        "websiteUrl": string
     }
 
 export type UpdateBlogType =
     {
         "name": string,
         "description": string,
-        "websiteUrl": "https://BUVWX92pD98RaWgA2Pfp.mnHdP4UQzM.VpHJH3Km6XESXjcc88RsTtI24bRhL1qST5tAOELsb2h35cPDBoAFK0WBVMKy"
+        "websiteUrl": string
     }

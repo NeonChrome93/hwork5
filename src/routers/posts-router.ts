@@ -2,6 +2,8 @@ import { Request, Response, Router} from "express";
 import {postsRepository} from "../repositories/posts/posts-repository-database";
 import {validationCreateUpdatePost} from "../middlewares/post-validation";
 import {authGuardMiddleware} from "../middlewares/auth";
+import {getQueryPagination} from "../middlewares/pagination";
+import {blogRepository} from "../repositories/blogs/blogs-repository-database";
 
 
 
@@ -9,8 +11,9 @@ export const postsRouter = Router({})
 
 
 postsRouter.get('/', async (req: Request, res: Response) => {
-    let arr = await postsRepository.readPosts();
-    res.send(arr);
+    const pagination = getQueryPagination(req.query)
+    const arr = await postsRepository.readPosts(pagination);
+    res.status(200).send(arr);
 })
 
 postsRouter.get('/:id', async (req: Request, res: Response) => {

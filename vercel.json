@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "hw3 blogs-posts mongoDB",
+  "name": "hw4 blogs-posts pagination mongoDB",
   "builds": [
     { "src": "src/index.ts", "use": "@vercel/node" }
   ],

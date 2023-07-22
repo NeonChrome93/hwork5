@@ -3,14 +3,18 @@ import {blogRepository} from "../repositories/blogs/blogs-repository-database";
 import {authGuardMiddleware} from "../middlewares/auth";
 import {validationCreateUpdateBlog} from "../middlewares/blogs-validation";
 import {BlogsType} from "../models/blogs-models/blogs-models-database";
+import {getQueryPagination} from "../middlewares/pagination";
 
 
 export const blogsRouter = Router({})
 
 blogsRouter.get('/', async (req: Request, res: Response) => {
-    let arr = await blogRepository.readBlogs();
+    const pagination = getQueryPagination(req.query)
+    const arr = await blogRepository.readBlogs(pagination);
     res.status(200).send(arr);
 })
+
+//pagination get
 
 blogsRouter.get('/:id', async (req: Request, res: Response) => {
     const blogId = req.params.id
