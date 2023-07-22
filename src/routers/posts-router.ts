@@ -11,7 +11,7 @@ export const postsRouter = Router({})
 
 
 postsRouter.get('/', async (req: Request, res: Response) => {
-    const pagination = getQueryPagination(req.query)
+    const pagination = getQueryPagination(req.query);
     const arr = await postsRepository.readPosts(pagination);
     res.status(200).send(arr);
 })

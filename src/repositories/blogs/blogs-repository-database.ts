@@ -17,8 +17,12 @@ import {PaginationModels} from "../../models/pagination-models";
 
         const filter = {name: {$regex: pagination.searchNameTerm, $options: 'i'}}
 
-        const blogs = await blogCollection.find(filter).sort({[pagination.sortBy]: pagination.sortDirection})
-            .skip(pagination.skip).limit(pagination.pageSize).toArray();
+        const blogs = await blogCollection
+            .find(filter).
+            sort({[pagination.sortBy]: pagination.sortDirection})
+            .skip(pagination.skip)
+            .limit(pagination.pageSize)
+            .toArray();
 
         const totalCount = await blogCollection.countDocuments(filter)
         const items = blogs.map((b) => ({

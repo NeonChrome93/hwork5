@@ -22,7 +22,6 @@ export const getQueryPagination = (query: any): QueryPaginationType => {
         skip: 0
     }
 
-
     if (query.searchNameTerm) {
         defaultValues.searchNameTerm = query.searchNameTerm
     }

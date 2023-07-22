@@ -25,7 +25,6 @@ export const postsRepository = {
 
        const totalCount = await postCollection.countDocuments()
        const items = posts.map((p) => ({
-
             id: p._id.toString(),
             title: p.title,
             shortDescription: p.shortDescription,

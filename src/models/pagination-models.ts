@@ -1,5 +1,4 @@
 
-
 export type PaginationModels<T> = {
     pagesCount: number,
     page: number,
