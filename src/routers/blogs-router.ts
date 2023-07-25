@@ -5,6 +5,7 @@ import {validationCreateUpdateBlog} from "../middlewares/blogs-validation";
 import {BlogsType} from "../models/blogs-models/blogs-models-database";
 import {getQueryPagination} from "../middlewares/pagination";
 import {postsRepository} from "../repositories/posts/posts-repository-database";
+import {validationCreatePostWithoutBlogId} from "../middlewares/post-withoutBlogId-validation";
 
 
 export const blogsRouter = Router({})
@@ -35,7 +36,10 @@ blogsRouter.get('/:id/posts', async (req: Request, res: Response) => {
 
 })
 
-blogsRouter.post('/:id/posts', async (req: Request, res: Response) => {
+blogsRouter.post('/:id/posts',
+    authGuardMiddleware,
+    ...validationCreatePostWithoutBlogId,
+    async (req: Request, res: Response) => {
     const blogId = req.params.id
     const blog = await blogRepository.readBlogsId(blogId)
     if(!blog) return res.sendStatus(404)
