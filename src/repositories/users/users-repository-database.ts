@@ -8,7 +8,7 @@ import {usersType} from "../../models/users-models/users-models-database";
 
 export const usersRepository = {
 
-    async getUsers(pagination:  QueryUserPaginationType): Promise<PaginationModels<UserViewModel[]>> {
+    async getUsers(pagination: QueryUserPaginationType): Promise<PaginationModels<UserViewModel[]>> {
 
         const filter = ({
             $or: [
@@ -71,6 +71,10 @@ export const usersRepository = {
             return false
         }
 
+    },
+    async deleteAllUsers(): Promise<boolean> {
+        // dbLocal.blogs = [];
+        await usersCollection.deleteMany({})
+        return true
     }
-
 }
