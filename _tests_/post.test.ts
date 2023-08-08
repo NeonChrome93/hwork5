@@ -15,9 +15,10 @@ const createPost = {
 }
 
 const updatePost = {
-    name: "Blalla",
-    description: "Blalal",
-    websiteUrl: "https://odintsovo.hh.ru/vacancy/81832912?from=vacancy_search_list"
+    title: "Cook",
+    shortDescription: "Kitchen",
+    content: "DDDGTUIYJTUT",
+
 }
 
 
@@ -34,17 +35,26 @@ describe('Post API', () => {
 
     it('Get all posts 200', async () => {
         const blogs = await request(app).post('/blogs').set(headers).send(createPost)
-        await request(app).get('/posts').expect(200, [])
+        await request(app).get('/posts').expect(200, { pagesCount: 1, page: 1, pageSize: 10, totalCount: 0, items: [] })
+    })
+let blog: any;
+ let post: any;
+    it('Should create post with blogId', async () => {
+        blog = await request(app).post('/blogs').set(headers).send(createBlog)
+        console.log(blog.body, 'blogs')
+        post = await request(app).post('/posts').set(headers).send({ ...createPost, blogId: blog.body.id} )
+
+
+
+        await request(app).get(`/posts/${post.body.id}`).expect(200, post.body)
+
+        //update post
+       // await request(app).put(`/posts/${posts.body.id}`).set(headers).send({...updatePost, blogId: blogs.body.id}).expect(204)
     })
 
-    it('Should create post with blogId', async () => {
-        const blogs = await request(app).post('/blogs').set(headers).send(createBlog)
-        console.log(blogs.body, 'blogs')
-        const posts = await request(app).post('/posts').set(headers).send({ ...createPost, blogId: blogs.body.id} )
-
-
-
-        await request(app).get(`/posts/${posts.body.id}`).expect(200, posts.body)
+    it('Put post', async () => {
+        //update post
+        await request(app).put(`/posts/${post.body.id}`).set(headers).send({...updatePost, blogId: blog.body.id}).expect(204)
     })
 
     it('Put blog', async () => {
@@ -59,3 +69,12 @@ describe('Post API', () => {
 
 //add negative tests //add auth tests
 })
+
+// describe('Post API', () => {
+//
+//     it('Put post', async () => {
+//         const blogs = await request(app).post('/blogs').set(headers).send(createBlog).expect(201)
+//         // await request(app).put(`/blogs/${blogs.body.id}`).set(headers).send(updateBlog).expect(204)
+//     })
+//
+// })

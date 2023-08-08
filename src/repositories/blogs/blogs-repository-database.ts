@@ -1,37 +1,40 @@
-
-import {BlogsOutputType, BlogsType, CreateBlogType, mongoType, UpdateBlogType} from "../../models/blogs-models/blogs-models-database";
+import {
+    BlogsOutputType,
+    BlogsType,
+    CreateBlogType,
+    mongoType,
+    UpdateBlogType
+} from "../../models/blogs-models/blogs-models-database";
 import {randomUUID} from "crypto";
-import {blogCollection, } from "../../db/database";
+import {blogCollection,} from "../../db/database";
 import {ObjectId} from "mongodb";
 import {QueryPaginationType} from "../../middlewares/pagination";
-import {PaginationModels} from "../../models/pagination-models";
+import {PaginationModels} from "../../models/pagination/pagination-models";
 
 
-
-
-    //todo also update blogName in posts
-    // updateBlog(updateBlogDto){
- export const blogRepository = {
+//todo also update blogName in posts
+// updateBlog(updateBlogDto){
+export const blogRepository = {
 
     async readBlogs(pagination: QueryPaginationType): Promise<PaginationModels<BlogsOutputType[]>> {
 
         const filter = {name: {$regex: pagination.searchNameTerm, $options: 'i'}}
 
         const blogs = await blogCollection
-            .find(filter).
-            sort({[pagination.sortBy]: pagination.sortDirection})
+            .find(filter)
+            .sort({[pagination.sortBy]: pagination.sortDirection})
             .skip(pagination.skip)
             .limit(pagination.pageSize)
             .toArray();
 
         const totalCount = await blogCollection.countDocuments(filter)
         const items = blogs.map((b) => ({
-                id: b._id.toString(),
-                name: b.name,
-                description: b.description,
-                websiteUrl: b.websiteUrl,
-                createdAt: b.createdAt,
-                isMembership: b.isMembership
+            id: b._id.toString(),
+            name: b.name,
+            description: b.description,
+            websiteUrl: b.websiteUrl,
+            createdAt: b.createdAt,
+            isMembership: b.isMembership
 
         }))
         const pagesCount = Math.ceil(totalCount / pagination.pageSize);
@@ -45,13 +48,13 @@ import {PaginationModels} from "../../models/pagination-models";
     },
 
 
-    async readBlogsId (id: string) {
+    async readBlogsId(id: string) {
         // let findId = dbLocal.blogs.find(b => b.id === id)
         // return findId
         // return (await client.db('test').collections<blogsType>('blogs')).find(b => b.id === id).toArray()
         const blog = await blogCollection.findOne({_id: new ObjectId(id)});
 
-        if(!blog){
+        if (!blog) {
             return null;
         }
 
@@ -65,20 +68,20 @@ import {PaginationModels} from "../../models/pagination-models";
         }
     },
 
-    async createBlog (newBlogFromRequest: CreateBlogType) : Promise<BlogsOutputType> {
+    async createBlog(newBlog: BlogsType): Promise<BlogsOutputType> {
         //const newId = randomUUID()
-        const dateNow = new Date()
-        const newBlog: BlogsType = {
-
-            name: newBlogFromRequest.name,
-            description: newBlogFromRequest.description,
-            websiteUrl: newBlogFromRequest.websiteUrl,
-            createdAt: dateNow.toISOString(),
-            isMembership: false //false Swagger
-        }//add mapping
+        // const dateNow = new Date()
+        // const newBlog: BlogsType = {
+        //
+        //     name: newBlogFromRequest.name,
+        //     description: newBlogFromRequest.description,
+        //     websiteUrl: newBlogFromRequest.websiteUrl,
+        //     createdAt: dateNow.toISOString(),
+        //     isMembership: false //false Swagger
+        // }//add mapping
         //TODO save in database
         const res = await blogCollection.insertOne({...newBlog});
-        return  {
+        return {
             id: res.insertedId.toString(),
             ...newBlog
         }
@@ -86,34 +89,32 @@ import {PaginationModels} from "../../models/pagination-models";
     },
 
 
-   async updateBlogs(id: string ,newUpdateRequest :UpdateBlogType) : Promise<boolean> {
-        let blogUpdate: mongoType | null = await blogCollection.findOne({_id: new ObjectId(id)})
+    async updateBlogs(id: string, newUpdateRequest: UpdateBlogType): Promise<boolean> {
 
-        if (blogUpdate) {
-            // blogUpdate.name = newUpdateRequest.name,
-            // blogUpdate.description = newUpdateRequest.description,
-            // blogUpdate.websiteUrl = newUpdateRequest.websiteUrl
-            const res = await blogCollection.updateOne({_id: new ObjectId(id)}, { $set: {name: newUpdateRequest.name,
-                    description: newUpdateRequest.description, websiteUrl: newUpdateRequest.websiteUrl }
+        // blogUpdate.name = newUpdateRequest.name,
+        // blogUpdate.description = newUpdateRequest.description,
+        // blogUpdate.websiteUrl = newUpdateRequest.websiteUrl
+        const res = await blogCollection.updateOne({_id: new ObjectId(id)}, {
+                $set: {
+                    name: newUpdateRequest.name,
+                    description: newUpdateRequest.description, websiteUrl: newUpdateRequest.websiteUrl
+                }
             }
-                  )
-            return res.matchedCount === 1;
-        } else {
-            return false
-        }
+        )
+        return res.matchedCount === 1;
+
     },
 
 
-    async deleteBlogs(id: string) : Promise<boolean>{
-        const filter = {_id: new ObjectId(id)}
-        const deleteBlog = await blogCollection.findOne(filter)
-        if (deleteBlog) {
-           try { await blogCollection.deleteOne(filter) }
-            catch (e){
-               return false
-            }
-            return true;
-        } else return false
+    async deleteBlogs(id: string): Promise<boolean> {
+
+        try {
+            const filter = {_id: new ObjectId(id)}
+            const res = await blogCollection.deleteOne(filter)
+            return res.deletedCount === 1
+        } catch (e) {
+            return false
+        }
 
     },
 
