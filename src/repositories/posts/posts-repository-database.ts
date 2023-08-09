@@ -84,7 +84,6 @@ export const postsRepository = {
 
     },
 
-
     async deletePosts(postId: string) {
 
             try {
