@@ -2,6 +2,8 @@ import {Request, Response, Router} from "express";
 import {commentServise} from "../domain/comments-servise";
 import {authMiddleware} from "../middlewares/auth";
 import {contentValidation} from "../middlewares/validations/content-validation";
+import {commentRepository} from "../repositories/comments/comments-repository-database";
+import {isCommentOwnerMiddleware} from "../middlewares/comment-info";
 
 export const commentsRouter = Router({})
 
@@ -16,6 +18,7 @@ commentsRouter.get('/:id', async (req: Request, res: Response) => {
 })
 
 commentsRouter.put('/:id', contentValidation ,authMiddleware, async (req: Request, res: Response) => {
+
     const commentId = req.params.id
     let foundId = await commentServise.updateComment(commentId, req.body)
     if (foundId) {
@@ -24,7 +27,7 @@ commentsRouter.put('/:id', contentValidation ,authMiddleware, async (req: Reques
 
 })
 
-commentsRouter.delete('/:commentId',authMiddleware, async (req: Request, res: Response) =>{
+commentsRouter.delete('/:id'  ,authMiddleware, isCommentOwnerMiddleware, async (req: Request, res: Response) =>{
     const commentId = req.params.id
     let isDeleted = await commentServise.deleteComment(commentId)
     if (isDeleted) {

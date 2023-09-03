@@ -40,13 +40,13 @@ export const commentServise = {
 
     async updateComment(commentId: string, newUpdateRequest: UpdateCommentType): Promise<boolean> {
         let comment = await commentRepository.readCommentId(commentId)
-        if(!comment) return false
+        if(!comment ) return false
         return  commentRepository.updateComment(commentId,newUpdateRequest)
 
     },
 
 
-    async deleteComment(commentId: string) {
+    async deleteComment(commentId: string): Promise<boolean> {
         let comment = await commentRepository.readCommentId(commentId)
         if(!comment) return false
         return  commentRepository.deleteComment(commentId)

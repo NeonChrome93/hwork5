@@ -68,7 +68,7 @@ export const commentRepository = {
         return res.matchedCount === 1;
     },
 
-    async deleteComment(commentId: string) {
+    async deleteComment(commentId: string): Promise<boolean> {
         try {
             const filter = {_id: new ObjectId(commentId)}
             const res = await commentsCollection.deleteOne(filter)
