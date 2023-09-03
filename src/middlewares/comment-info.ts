@@ -17,6 +17,7 @@ export const  isCommentOwnerMiddleware = async (req: Request, res: Response, nex
     const commentBeforeDelete = await commentServise.readCommentId(req.params.id)
 
     if(!commentBeforeDelete) {return res.sendStatus(404) }
+    if(!userId) {return res.sendStatus(404) }
 
       const commentarorId  = commentBeforeDelete.commentatorInfo.userId
         if(commentarorId !== userId.toString()) {

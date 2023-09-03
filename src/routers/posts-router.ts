@@ -11,7 +11,7 @@ import {contentValidation} from "../middlewares/validations/content-validation";
 export const postsRouter = Router({})
 
 postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
-    const postId = req.params.id
+    const postId = req.params.postId
     const pagination = getQueryPagination(req.query)
     const comment = await commentRepository.readCommentByPostId(postId, pagination)
     if(!comment) return res.sendStatus(404)
@@ -73,6 +73,7 @@ postsRouter.delete('/:id',
 postsRouter.post('/:postId/comments', contentValidation, authMiddleware, async (req: Request, res: Response) => {
     const post = await postServise.readPostId(req.params.postId)
     if(!post) return res.sendStatus(404)
+
     const userId = req.user!._id.toString()
     const userLogin = req.user!.login
     const newComment = await commentServise.createComment(post.id.toString(), userId, userLogin, req.body.content)
