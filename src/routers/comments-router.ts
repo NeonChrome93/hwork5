@@ -17,7 +17,7 @@ commentsRouter.get('/:id', async (req: Request, res: Response) => {
 
 })
 
-commentsRouter.put('/:id', contentValidation ,authMiddleware, async (req: Request, res: Response) => {
+commentsRouter.put('/:id', contentValidation ,authMiddleware, isCommentOwnerMiddleware, async (req: Request, res: Response) => {
 
     const commentId = req.params.id
     let foundId = await commentServise.updateComment(commentId, req.body)
