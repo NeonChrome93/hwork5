@@ -1,7 +1,7 @@
 import {body} from "express-validator";
 import {inputValidationMiddleware} from "./input-validation-middleware";
 //import {dbLocal} from "../db/db-local";
-import {blogCollection} from "../db/database";
+import {blogCollection} from "../../db/database";
 import {ObjectId} from "mongodb";
 
 export const validationCreateUpdatePost = [

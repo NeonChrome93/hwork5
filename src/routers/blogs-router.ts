@@ -1,11 +1,11 @@
 import {Request, Response, Router } from "express";
 import {blogsServise} from "../domain/blogs-servise";
 import {authGuardMiddleware} from "../middlewares/auth";
-import {validationCreateUpdateBlog} from "../middlewares/blogs-validation";
-import {BlogsType} from "../models/blogs-models/blogs-models-database";
+import {validationCreateUpdateBlog} from "../middlewares/validations/blogs-validation";
+import {BlogsType} from "../models/blogs-models/blogs-models";
 import {getQueryPagination} from "../middlewares/pagination";
 import {postsRepository} from "../repositories/posts/posts-repository-database";
-import {validationCreatePostWithoutBlogId} from "../middlewares/post-withoutBlogId-validation";
+import {validationCreatePostWithoutBlogId} from "../middlewares/validations/post-withoutBlogId-validation";
 import {postServise} from "../domain/post-servise";
 
 

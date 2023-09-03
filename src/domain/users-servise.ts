@@ -12,7 +12,8 @@ import {PaginationModels} from "../models/pagination/pagination-models";
 
 
 
-export const userServiсe = {
+
+export const userService = {
 
     async getUsers(pagination:  QueryUserPaginationType) :Promise<PaginationModels<UserViewModel[]>> {
         return usersRepository.getUsers(pagination)
@@ -39,16 +40,16 @@ export const userServiсe = {
         }
     },
 
-    // async findUserById(id: string): Promise<usersOutputType | null> {
-    //     return usersRepository.readUserById(id)
-    // },
+    async findUserById(id: string): Promise<UserDbModel | null> {
+         return usersRepository.readUserById(id)
+     },
 
-    async checkCredentials(loginOrEmail: string, password: string) {
+    async checkCredentials(loginOrEmail: string, password: string): Promise<UserDbModel | null> {
         const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
-        if (!user) return false
+        if (!user) return null
         const passwordHash = await this._generateHash(password, user.passwordSalt)
         if (user.passwordHash !== passwordHash) {
-            return false
+            return null
         }
         return user
 

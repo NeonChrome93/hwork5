@@ -3,11 +3,9 @@ import {
     BlogsOutputType,
     BlogsType,
     CreateBlogType,
-    mongoType,
     UpdateBlogType
-} from "../models/blogs-models/blogs-models-database";
-import {blogCollection} from "../db/database";
-import {ObjectId} from "mongodb";
+} from "../models/blogs-models/blogs-models";
+
 import {PaginationModels} from "../models/pagination/pagination-models";
 import {QueryPaginationType} from "../middlewares/pagination";
 

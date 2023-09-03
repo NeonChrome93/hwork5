@@ -1,6 +1,5 @@
 import request from "supertest";
 import {app} from "../src/app";
-import {body} from "express-validator";
 // describe('base', () => {
 //
 //     it('base', () => {
@@ -22,6 +21,10 @@ const updateBlog = {
     websiteUrl: "https://odintsovo.hh.ru/vacancy/81832912?from=vacancy_search_list"
 }
 
+function summ(a:number,b:number) :number {
+    return a + b
+}
+
 
 const headers = {
     "Authorization": "Basic YWRtaW46cXdlcnR5"
@@ -32,7 +35,11 @@ describe('Post API', () => {
     it('before all', async () => {
         await request(app).delete('/testing/all-data').expect(204)
 
+        const x = summ(10,14)
+        expect(x).toBe(24)
     })
+
+
 
     it('Get all blogs 200', async () => {
         await request(app)

@@ -3,9 +3,8 @@ import {
     PostOutputType,
     PostType,
     UpdatePostType
-} from "../../models/posts-models/post-models-databse";
+} from "../../models/posts-models/post-models";
 import {Filter, ObjectId} from "mongodb";
-import {blogRepository} from "../blogs/blogs-repository-database";
 import {QueryPaginationType} from "../../middlewares/pagination";
 import {PaginationModels} from "../../models/pagination/pagination-models";
 

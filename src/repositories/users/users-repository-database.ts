@@ -1,10 +1,8 @@
-import {blogCollection, usersCollection} from "../../db/database";
+import {usersCollection} from "../../db/database";
 import {ObjectId} from "mongodb";
 import {UserDbModel, UserViewModel} from "../../models/users-models/user.models";
-import {getQueryPagination, QueryPaginationType, QueryUserPaginationType} from "../../middlewares/pagination";
-import {blogsServise} from "../../domain/blogs-servise";
+import {QueryUserPaginationType} from "../../middlewares/pagination";
 import {PaginationModels} from "../../models/pagination/pagination-models";
-import {usersType} from "../../models/users-models/users-models-database";
 
 export const usersRepository = {
 
@@ -44,10 +42,10 @@ export const usersRepository = {
     },
 
 
-    async readUserById(id: string): Promise<usersType | false> {
+    async readUserById(id: string): Promise<UserDbModel | null> {
         const user = await usersCollection.findOne({_id: new ObjectId(id)});
         if (!user) {
-            return false;
+            return null;
         }
         return user
     },

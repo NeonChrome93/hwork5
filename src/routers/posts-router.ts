@@ -1,13 +1,23 @@
 import {Request, Response, Router} from "express";
-import {postsRepository} from "../repositories/posts/posts-repository-database";
-import {validationCreateUpdatePost} from "../middlewares/post-validation";
-import {authGuardMiddleware} from "../middlewares/auth";
+import {validationCreateUpdatePost} from "../middlewares/validations/post-validation";
+import {authGuardMiddleware, authMiddleware} from "../middlewares/auth";
 import {getQueryPagination} from "../middlewares/pagination";
-import {blogRepository} from "../repositories/blogs/blogs-repository-database";
 import {postServise} from "../domain/post-servise";
+import {commentServise} from "../domain/comments-servise";
+import {commentRepository} from "../repositories/comments/comments-repository-database";
+import {contentValidation} from "../middlewares/validations/content-validation";
 
 
 export const postsRouter = Router({})
+
+postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
+    const postId = req.params.id
+    const pagination = getQueryPagination(req.query)
+    const comment = await commentRepository.readCommentByPostId(postId, pagination)
+    if(!comment) return res.sendStatus(404)
+    return res.status(200).send(comment)
+
+})
 
 
 postsRouter.get('/', async (req: Request, res: Response) => {
@@ -58,6 +68,16 @@ postsRouter.delete('/:id',
             res.sendStatus(204);
         } else res.sendStatus(404)
     })
+
+
+postsRouter.post('/:postId/comments', contentValidation, authMiddleware, async (req: Request, res: Response) => {
+    const post = await postServise.readPostId(req.params.postId)
+    if(!post) return res.sendStatus(404)
+    const userId = req.user!._id.toString()
+    const userLogin = req.user!.login
+    const newComment = await commentServise.createComment(post.id.toString(), userId, userLogin, req.body.content)
+    return res.status(201).send(newComment)
+})
 
 // postsRouter.delete('/', (req: Request, res: Response) => {
 //     postsRepository.deleteAllShops()

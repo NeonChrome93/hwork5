@@ -1,6 +1,6 @@
 import {NextFunction, Response, Request} from "express";
 import {validationResult} from "express-validator";
-import {errorType} from "../models/error-models";
+import {errorType} from "../../models/error-models";
 
 const errFormat = ({msg, path}: any): errorType => {
     return {

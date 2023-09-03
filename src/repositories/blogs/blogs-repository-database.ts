@@ -1,11 +1,8 @@
 import {
     BlogsOutputType,
     BlogsType,
-    CreateBlogType,
-    mongoType,
     UpdateBlogType
-} from "../../models/blogs-models/blogs-models-database";
-import {randomUUID} from "crypto";
+} from "../../models/blogs-models/blogs-models";
 import {blogCollection,} from "../../db/database";
 import {ObjectId} from "mongodb";
 import {QueryPaginationType} from "../../middlewares/pagination";

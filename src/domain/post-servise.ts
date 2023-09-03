@@ -1,4 +1,4 @@
-import {createPostType, PostOutputType, PostType, UpdatePostType} from "../models/posts-models/post-models-databse";
+import {createPostType, PostOutputType, PostType, UpdatePostType} from "../models/posts-models/post-models";
 import {blogRepository} from "../repositories/blogs/blogs-repository-database";
 import {postsRepository} from "../repositories/posts/posts-repository-database";
 import {QueryPaginationType} from "../middlewares/pagination";

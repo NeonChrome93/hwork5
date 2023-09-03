@@ -1,5 +1,5 @@
 import {WithId} from "mongodb";
-import {BlogsType} from "../blogs-models/blogs-models-database";
+
 
 export type PostType = {
 
