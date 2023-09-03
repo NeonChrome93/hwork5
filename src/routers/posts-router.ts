@@ -12,6 +12,7 @@ export const postsRouter = Router({})
 
 postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
     const postId = req.params.postId
+    if(!postId) return res.sendStatus(404)
     const pagination = getQueryPagination(req.query)
     const comment = await commentRepository.readCommentByPostId(postId, pagination)
     if(!comment) return res.sendStatus(404)
