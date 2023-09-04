@@ -71,7 +71,7 @@ postsRouter.delete('/:id',
     })
 
 
-postsRouter.post('/:postId/comments', contentValidation, authMiddleware, async (req: Request, res: Response) => {
+postsRouter.post('/:postId/comments',  authMiddleware, ...contentValidation, async (req: Request, res: Response) => {
     const post = await postServise.readPostId(req.params.postId)
     if(!post) return res.sendStatus(404)
 
