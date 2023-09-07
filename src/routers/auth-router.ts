@@ -3,7 +3,10 @@ import {userService} from "../domain/users-servise";
 import {validationLoginAuth} from "../middlewares/validations/auth-logiin-validation";
 import {jwtService} from "../application/jwt-service";
 import {authMiddleware} from "../middlewares/auth";
-
+import {validationCreateUser} from "../middlewares/validations/user-create-validation";
+import {authService} from "../domain/auth-service";
+import nodemailer from "nodemailer";
+import {confirmationCodeValidator} from "../middlewares/validations/confirmation-code-validator";
 
 export const authRouter = Router({})
 
@@ -23,6 +26,41 @@ authRouter.post('/login',
             res.sendStatus(401)
         }
     })
+
+authRouter.post('/registration'  , ...validationCreateUser, async (req: Request, res: Response) =>{
+
+
+
+
+    await authService.registrationUser({
+        login: req.body.login,
+        email: req.body.email,
+        password: req.body.password,
+        //message: req.body.message
+    })
+    return res.sendStatus(204);
+
+})
+
+authRouter.post('/registration-confirmation', ...confirmationCodeValidator, async (req: Request, res: Response) =>{
+   const isConfirmed = await authService.confirmEmail(req.body.code)
+    if(isConfirmed) {
+        res.sendStatus(204)
+    }
+    else res.sendStatus(400)
+})
+
+authRouter.post('/registration-email-resending', async (req: Request, res: Response) =>{
+//юзеру может не прийти код, сгенерировать новый,записать в базу,  переслать код еще раз по емайл новый код
+})
+
+//1)Регистрация в системе отправить письмо с кодом, код обернуть в ссылку swagger
+//2)auth: подтверждение регистрации при помощи кода, отправленного внутри ссылки на почту
+// (в письмо нужно вставить обязательно ссылку (можно и в тег а, можно без html), аккунт существует регистрация завершена
+// и в ссылке должен быть query-параметр code, например:
+//3)auth: переотправка письма с кодом регистрации. сгенерировать новый код сохранить в БД и отправить на почту
+// при создании пользователя супер админом (POST "/users")
+// - подтверждения почты не требуется (пользователь сразу же после создания может входить в систему)
 
 authRouter.get('/me',
     authMiddleware,
