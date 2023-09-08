@@ -8,6 +8,7 @@ import {authService} from "../domain/auth-service";
 import nodemailer from "nodemailer";
 import {confirmationCodeValidator} from "../middlewares/validations/confirmation-code-validator";
 import {usersRepository} from "../repositories/users/users-repository-database";
+import {confirmationEmailValidation} from "../middlewares/validations/confirmation-email-validation";
 
 export const authRouter = Router({})
 
@@ -51,7 +52,7 @@ authRouter.post('/registration-confirmation', ...confirmationCodeValidator, asyn
     else res.sendStatus(400)
 })
 
-authRouter.post('/registration-email-resending', async (req: Request, res: Response) =>{
+authRouter.post('/registration-email-resending', ...confirmationEmailValidation, async (req: Request, res: Response) =>{
     const receivedСode = await authService.resendingCode(req.body.email)
     if(receivedСode) {
         res.sendStatus(204)
