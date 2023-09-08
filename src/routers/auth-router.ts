@@ -9,6 +9,7 @@ import nodemailer from "nodemailer";
 import {confirmationCodeValidator} from "../middlewares/validations/confirmation-code-validator";
 import {usersRepository} from "../repositories/users/users-repository-database";
 import {confirmationEmailValidation} from "../middlewares/validations/confirmation-email-validation";
+import {userRegistrationEmailValidation} from "../middlewares/validations/user-registration-email-validation";
 
 export const authRouter = Router({})
 
@@ -29,7 +30,7 @@ authRouter.post('/login',
         }
     })
 
-authRouter.post('/registration'  , ...validationCreateUser, async (req: Request, res: Response) =>{
+authRouter.post('/registration'  , ...userRegistrationEmailValidation, async (req: Request, res: Response) =>{
 
 
 
