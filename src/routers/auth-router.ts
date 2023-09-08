@@ -7,6 +7,7 @@ import {validationCreateUser} from "../middlewares/validations/user-create-valid
 import {authService} from "../domain/auth-service";
 import nodemailer from "nodemailer";
 import {confirmationCodeValidator} from "../middlewares/validations/confirmation-code-validator";
+import {usersRepository} from "../repositories/users/users-repository-database";
 
 export const authRouter = Router({})
 
@@ -51,6 +52,11 @@ authRouter.post('/registration-confirmation', ...confirmationCodeValidator, asyn
 })
 
 authRouter.post('/registration-email-resending', async (req: Request, res: Response) =>{
+    const receivedСode = await authService.resendingCode(req.body.email)
+    if(receivedСode) {
+        res.sendStatus(204)
+    }
+    else res.sendStatus(400)
 //юзеру может не прийти код, сгенерировать новый,записать в базу,  переслать код еще раз по емайл новый код
 })
 

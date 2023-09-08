@@ -24,7 +24,12 @@ export const authService = {
             isConfirmed: false // by registration
         }
         await usersRepository.createUser(newUser);
-        await emailService.sendEmail(newUser.email, newUser.confirmationCode, 'It is your code')
+        try{
+            await emailService.sendEmail(newUser.email, newUser.confirmationCode, 'It is your code')
+        }
+       catch (e) {
+           console.log('registration user email error', e);
+       }
         return {
             id: newUser._id.toString(),
             login: newUser.login,
@@ -32,14 +37,30 @@ export const authService = {
             createdAt: newUser.createdAt
         }
     },
-
+//подтверждение email
     async confirmEmail (code: string) {
         const user = await usersRepository.readUserByCode(code)
         if (!user) return false;
         await usersRepository.confirmEmail(user._id.toString())
         return true
 
-    }
+    },
+
+    async resendingCode (email: string): Promise<boolean> {
+        const user = await usersRepository.readUserByEmail(email)
+        if (!user) return false;
+        const userWithNewCode = await usersRepository.updateConfirmationCode(user._id.toString());
+       if(!userWithNewCode) return false;
+       try {
+           await emailService.sendEmail(user.email, userWithNewCode.confirmationCode, 'It is your code')
+       }
+        catch (e) {
+            console.log("code resending email error", e);
+        }
+
+        return true
+
+    },
 
 
 
