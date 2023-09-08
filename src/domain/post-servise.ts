@@ -34,6 +34,8 @@ export const postServise = {
     },
 
     async deletePosts(postId: string) {
+
+
         let post = await postsRepository.readPostId(postId)
         if(!post) return false
         return  postsRepository.deletePosts(postId)

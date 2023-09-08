@@ -7,12 +7,15 @@ export type UserCreateModel = {
 }
 
 export type UserDbModel = {
-    _id: ObjectId
-    login: string
-    email: string
-    passwordSalt: string
-    passwordHash: string
-    createdAt: string
+    _id: ObjectId,
+    login: string,
+    email: string,
+    passwordSalt: string,
+    passwordHash: string,
+    createdAt: string,
+    confirmationCode: string,
+    isConfirmed: boolean
+
 }
 
 export type UserViewModel = {

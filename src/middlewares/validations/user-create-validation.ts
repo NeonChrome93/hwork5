@@ -1,5 +1,5 @@
 import {body} from "express-validator";
-import {inputValidationMiddleware} from "./validations/input-validation-middleware";
+import {inputValidationMiddleware} from "./input-validation-middleware";
 
 export const validationCreateUser = [
     body('login').notEmpty().withMessage('incorrect login'),

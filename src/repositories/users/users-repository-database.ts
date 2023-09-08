@@ -1,8 +1,9 @@
 import {usersCollection} from "../../db/database";
-import {ObjectId} from "mongodb";
+import {ModifyResult, ObjectId} from "mongodb";
 import {UserDbModel, UserViewModel} from "../../models/users-models/user.models";
 import {QueryUserPaginationType} from "../../middlewares/pagination";
 import {PaginationModels} from "../../models/pagination/pagination-models";
+import {randomUUID} from "crypto";
 
 export const usersRepository = {
 
@@ -74,5 +75,37 @@ export const usersRepository = {
         // dbLocal.blogs = [];
         await usersCollection.deleteMany({})
         return true
-    }
+    },
+
+
+    async readUserByCode(code: string): Promise<UserDbModel | null> {
+        const user = await usersCollection.findOne({confirmationCode: code});
+        if (!user) {
+            return null;
+        }
+        return user
+    },
+
+    async confirmEmail(id: string): Promise<void> {
+        await usersCollection.updateOne({_id: new ObjectId(id)}, {$set: {isConfirmed: true}});
+        return;
+    },
+
+
+    async readUserByEmail(email: string): Promise<UserDbModel | null> {
+        const user = await usersCollection.findOne({email: email});
+        if (!user) {
+            return null;
+        }
+        return user
+    },
+
+    async updateConfirmationCode(id: string): Promise<any> {
+        const user = await usersCollection.findOneAndUpdate({_id: new ObjectId(id)},
+            {$set: {confirmationCode: randomUUID()}}, {returnDocument: 'after'});
+        console.log('repo:', user)
+        return user;
+    },
+
+
 }

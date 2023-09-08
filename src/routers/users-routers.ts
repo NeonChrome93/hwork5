@@ -2,7 +2,7 @@ import {Request, Response, Router} from "express";
 import {userService} from "../domain/users-servise";
 import {UserCreateModel} from "../models/users-models/user.models";
 import {getQueryUserPagination} from "../middlewares/pagination";
-import {validationCreateUser} from "../middlewares/user-create-validation";
+import {validationCreateUser} from "../middlewares/validations/user-create-validation";
 import {authGuardMiddleware} from "../middlewares/auth";
 
 
