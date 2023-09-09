@@ -100,11 +100,9 @@ export const usersRepository = {
         return user
     },
 
-    async updateConfirmationCode(id: string): Promise<any> {
-        const user = await usersCollection.findOneAndUpdate({_id: new ObjectId(id)},
-            {$set: {confirmationCode: randomUUID()}}, {returnDocument: 'after'});
-        console.log('repo:', user)
-        return user;
+    async updateConfirmationCode(id: string, newCode: string): Promise<any> {
+        return usersCollection.updateOne({_id: new ObjectId(id)},
+            {$set: {confirmationCode: newCode}},);
     },
 
 
