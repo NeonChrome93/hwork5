@@ -9,9 +9,9 @@ export const userRegistrationEmailValidation = [
     body('login').isString().trim().isLength({min: 3, max: 10}).withMessage('incorrect login'),
     body('login').custom( async (login: string) => {
         const user = await usersRepository.findByLoginOrEmail(login)
-        if(!user) throw new Error("user not exist")
+        if(!user) return true
         if(user.login) throw new Error("user already exist")
-        return true
+
 
     }),
     body('password').notEmpty().withMessage('password is required'),
@@ -21,9 +21,9 @@ export const userRegistrationEmailValidation = [
     body('email').isString().trim().isLength({max: 150}).withMessage('incorrect email'),
     body('email').custom(async (email: string) => {
         const user = await usersRepository.readUserByEmail(email)
-        if(!user) throw new Error("user not exist")
+        if(!user) return true
         if(user.isConfirmed) throw new Error("email already confirmed")
-        return true
+
 
     }),
 
