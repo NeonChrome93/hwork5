@@ -52,13 +52,10 @@ export const authService = {
         const newCode = randomUUID()
         await usersRepository.updateConfirmationCode(user._id.toString(), newCode);
         try {
-            await emailService.sendEmail(user.email, newCode, 'It is your code')
+            emailService.sendEmail(user.email, newCode, 'It is your code')
         } catch (e) {
             console.log("code resending email error", e);
         }
-
-        const usera = await usersRepository.readUserByEmail(email)
-        console.log(usera, "user")
 
         return true
 
