@@ -11,13 +11,13 @@ export const userRegistrationEmailValidation = [
     }).withMessage('incorrect login').custom(async (login: string) => {
         const user = await usersRepository.findByLoginOrEmail(login)
         if (!user) return true
-        if (user.login) throw new Error("user with this login already exist")
+        throw new Error("user with this login already exist")
 
 
     }),
     body('password').isString().trim().notEmpty().isLength({min: 6, max: 10}).withMessage('incorrect password'),
 
-    body('email').isString().trim().isLength({min: 6, max: 10}).isEmail().custom(async (email: string) => {
+    body('email').isString().isEmail().custom(async (email: string) => {
         const user = await usersRepository.readUserByEmail(email)
         if (!user) return true
         throw new Error('user with this email already created')
