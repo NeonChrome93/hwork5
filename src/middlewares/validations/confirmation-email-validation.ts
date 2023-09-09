@@ -4,7 +4,7 @@ import {usersRepository} from "../../repositories/users/users-repository-databas
 
 export const confirmationEmailValidation = [
     body('email').notEmpty().withMessage('incorrect email'),
-    body('email').isURL().withMessage('incorrect email'),
+    body('email').isEmail().withMessage('incorrect email'),
     body('email').isString().trim().isLength({max: 150}).withMessage('incorrect email'),
     body('email').custom(async (email: string)=> {
         const user = await usersRepository.readUserByEmail(email)
