@@ -47,12 +47,11 @@ export const authService = {
 
     async resendingCode(email: string): Promise<boolean> {
         const user = await usersRepository.readUserByEmail(email)
-        console.log(user, "user")
         if (!user) return false;
         const newCode = randomUUID()
         await usersRepository.updateConfirmationCode(user._id.toString(), newCode);
         try {
-            emailService.sendEmail(user.email, newCode, 'It is your code')
+             emailService.sendEmail(user.email, newCode, 'It is your code');
         } catch (e) {
             console.log("code resending email error", e);
         }
