@@ -24,7 +24,10 @@ authRouter.post('/login',
         if (user) {
             const token = await jwtService.createJWT(user)
             //const tokens = await jwtService.createTokens(userId)
-            res.status(200).send({accessToken: token} )//req.headers.authorization = ''
+            res.cookie() //отправить ключ значение,
+
+            res.status(200).send({accessToken: token} )
+
         } else {
             res.sendStatus(401)
         }
@@ -52,6 +55,8 @@ authRouter.post('/registration-confirmation', ...confirmationCodeValidator, asyn
     }
     else res.sendStatus(400)
 })
+
+
 
 authRouter.post('/registration-email-resending', ...confirmationEmailValidation, async (req: Request, res: Response) =>{
     const receivedСode = await authService.resendingCode(req.body.email)

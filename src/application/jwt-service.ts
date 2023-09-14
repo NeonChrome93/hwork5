@@ -19,5 +19,8 @@ export const jwtService = {
             return null
         }
     }
+    //
+
+    //создать токен с настройками и вернуть токен в куку createCookieToken
 }
 
