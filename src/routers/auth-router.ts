@@ -52,7 +52,14 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) => {
         res.sendStatus(401);
     }
 })
+    authRouter.post('/logout', async (req: Request, res: Response) => {
+        const accessToken = jwtService.createJWT(payload);
+        if (accessToken) {
+            res.clearCookie('refreshToken', {path: '/auth'}).status(204)
+        }
+        else res.sendStatus(401)
 
+    })
 
 
 
