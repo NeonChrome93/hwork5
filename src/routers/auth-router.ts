@@ -26,16 +26,38 @@ authRouter.post('/login',
             //const tokens = await jwtService.createTokens(userId)
             res.cookie() //отправить ключ значение,
 
-            res.status(200).send({accessToken: token} )
+            res.status(200).send({accessToken: token})
 
         } else {
             res.sendStatus(401)
         }
     })
 
-authRouter.post('/registration'  , ...userRegistrationEmailValidation, async (req: Request, res: Response) =>{
+authRouter.post('/refresh-token', async (req: Request, res: Response) => {
+    const {userId} = req.body;
+
+    try {
+        // Генерация новых токенов на основе переданных данных, например, идентификатора пользователя
+        const payload = {userId};
+        const accessToken = jwtService.createJWT(payload);
+        const refreshToken = jwtService.generateRefreshToken(payload);
+
+        // Установка токенов в куки
+        res.cookie('accessToken', accessToken, {httpOnly: true, secure: true});
+        res.cookie('refreshToken', refreshToken, {httpOnly: true});
+
+        res.sendStatus(200);
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(401);
+    }
+})
 
 
+
+
+
+authRouter.post('/registration', ...userRegistrationEmailValidation, async (req: Request, res: Response) => {
 
 
     await authService.registrationUser({
@@ -48,22 +70,19 @@ authRouter.post('/registration'  , ...userRegistrationEmailValidation, async (re
 
 })
 
-authRouter.post('/registration-confirmation', ...confirmationCodeValidator, async (req: Request, res: Response) =>{
-   const isConfirmed = await authService.confirmEmail(req.body.code)
-    if(isConfirmed) {
+authRouter.post('/registration-confirmation', ...confirmationCodeValidator, async (req: Request, res: Response) => {
+    const isConfirmed = await authService.confirmEmail(req.body.code)
+    if (isConfirmed) {
         res.sendStatus(204)
-    }
-    else res.sendStatus(400)
+    } else res.sendStatus(400)
 })
 
 
-
-authRouter.post('/registration-email-resending', ...confirmationEmailValidation, async (req: Request, res: Response) =>{
+authRouter.post('/registration-email-resending', ...confirmationEmailValidation, async (req: Request, res: Response) => {
     const receivedСode = await authService.resendingCode(req.body.email)
-    if(receivedСode) {
+    if (receivedСode) {
         res.sendStatus(204)
-    }
-    else res.sendStatus(400)
+    } else res.sendStatus(400)
 //юзеру может не прийти код, сгенерировать новый,записать в базу,  переслать код еще раз по емайл новый код
 })
 
@@ -79,12 +98,12 @@ authRouter.get('/me',
     authMiddleware,
     (req: Request, res: Response) => {
 
-    const user = req.user
+        const user = req.user
         res.status(200).send({
             email: user!.email,
             login: user!.login,
             userId: user!._id.toString()
         })
-})
+    })
 
 //secret + payload(userId) -> "dfjgghdi.jgidrhger.lghltehghd"
