@@ -22,11 +22,13 @@ authRouter.post('/login',
         const {loginOrEmail, password} = req.body
         const user = await userService.checkCredentials(loginOrEmail, password)
         if (user) {
-            const token = await jwtService.createJWT(user)
-            //const tokens = await jwtService.createTokens(userId)
-            res.cookie() //отправить ключ значение,
 
-            res.status(200).send({accessToken: token})
+            const accessToken = jwtService.createJWT(user);
+            const refreshToken = jwtService.generateRefreshToken(user);
+
+            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true});
+
+            res.status(200).send({accessToken: accessToken})
 
         } else {
             res.sendStatus(401)
@@ -34,34 +36,48 @@ authRouter.post('/login',
     })
 
 authRouter.post('/refresh-token', async (req: Request, res: Response) => {
-    const {userId} = req.body;
+    const refreshToken = req.cookies.refreshToken
 
-    try {
+
+    if (refreshToken) {
         // Генерация новых токенов на основе переданных данных, например, идентификатора пользователя
-        const payload = {userId};
-        const accessToken = jwtService.createJWT(payload);
-        const refreshToken = jwtService.generateRefreshToken(payload);
+        //Проверить нет ли рефреш токена в черном списке
 
-        // Установка токенов в куки
-        res.cookie('accessToken', accessToken, {httpOnly: true, secure: true});
-        res.cookie('refreshToken', refreshToken, {httpOnly: true});
+        const userId = jwtService.getUserIdByToken(refreshToken)
+        if (!userId) return res.sendStatus(401)
+        const user = await usersRepository.readUserById(userId.toString())
+        if (!user) return res.sendStatus(401)
+        const accessToken = jwtService.createJWT(user);
+        const refreshToken = jwtService.generateRefreshToken(user);
 
-        res.sendStatus(200);
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(401);
+        // Создать метод в репозитории и туда кинуть старый рефрещ токен
+        //res.cookie('accessToken', accessToken, {httpOnly: true, secure: true});
+        res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true});
+
+        res.status(200).send({accessToken: accessToken})
+    } else {
+        return res.sendStatus(401)
     }
+
 })
-    authRouter.post('/logout', async (req: Request, res: Response) => {
-        const accessToken = jwtService.createJWT(payload);
-        if (accessToken) {
-            res.clearCookie('refreshToken', {path: '/auth'}).status(204)
-        }
-        else res.sendStatus(401)
-
-    })
+authRouter.post('/logout', async (req: Request, res: Response) => {
+    const refreshToken = req.cookies.refreshToken
 
 
+    if (refreshToken) {
+
+        //Проверить нет ли рефреш токена в черном списке
+        const userId = jwtService.getUserIdByToken(refreshToken)
+        if (!userId) return res.sendStatus(401)
+        // Создать метод в репозитории и туда кинуть старый рефрещ токен
+
+        res.sendStatus(204)
+    } else {
+        return res.sendStatus(401)
+    }
+
+
+})
 
 
 authRouter.post('/registration', ...userRegistrationEmailValidation, async (req: Request, res: Response) => {
