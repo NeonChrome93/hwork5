@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+import jwt, {JwtPayload} from 'jsonwebtoken'
 import {UserDbModel} from "../models/users-models/user.models";
 import {ObjectId} from "mongodb";
 
@@ -18,8 +18,14 @@ export const jwtService = {
         catch (error) {
             return null
         }
+    },
+
+    async generateRefreshToken(user: UserDbModel) {
+        return jwt.sign({userId: user._id}, process.env.JWT_SECRET || "123", {
+            expiresIn: '7h',
+        });
+
     }
-    //
 
     //создать токен с настройками и вернуть токен в куку createCookieToken
 }
