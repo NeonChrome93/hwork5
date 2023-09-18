@@ -1,4 +1,5 @@
 import {usersCollection} from "../../db/database";
+import {tokenToBlacklistCollection} from "../../db/database";
 import {ModifyResult, ObjectId} from "mongodb";
 import {UserDbModel, UserViewModel} from "../../models/users-models/user.models";
 import {QueryUserPaginationType} from "../../middlewares/pagination";
@@ -103,6 +104,17 @@ export const usersRepository = {
     async updateConfirmationCode(id: string, newCode: string): Promise<any> {
         return usersCollection.updateOne({_id: new ObjectId(id)},
             {$set: {confirmationCode: newCode}},);
+    },
+
+    async addRefreshTokenToBlacklist(token: string): Promise<any> {
+       return  tokenToBlacklistCollection.insertOne({token})
+
+    },
+
+    async findRefreshTokenToBlacklist(token: string): Promise<any> {
+        return await tokenToBlacklistCollection.findOne({token: token});
+
+
     },
 
 

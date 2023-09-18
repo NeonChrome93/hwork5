@@ -1,28 +1,30 @@
 import jwt, {JwtPayload} from 'jsonwebtoken'
 import {UserDbModel} from "../models/users-models/user.models";
 import {ObjectId} from "mongodb";
+import {configKeys} from "../config";
 
 
 export const jwtService = {
 
-    async createJWT(user: UserDbModel) {
-        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET || "123", {expiresIn: '12h'})
+     createJWT(user: UserDbModel) {
+        const token = jwt.sign({userId: user._id}, configKeys.accessTokenPrivateKey, {expiresIn: '10s'})
         return token
     },
 
-    async getUserIdByToken(token: string) {
+     getUserIdByToken(token: string) {
         try {
-         const result : any = jwt.verify(token,process.env.JWT_SECRET || "123")
-            return new ObjectId(result.userId)
+         const result : any = jwt.verify(token,configKeys.accessTokenPrivateKey )
+            return result.userId
+
         }
         catch (error) {
             return null
         }
     },
-
-    async generateRefreshToken(user: UserDbModel) {
-        return jwt.sign({userId: user._id}, process.env.JWT_SECRET || "123", {
-            expiresIn: '7h',
+ //jwt.decode - можно достать  дату окончания действия токена
+   generateRefreshToken(user: UserDbModel) { //deviceId
+        return jwt.sign({userId: user._id}, configKeys.accessTokenPrivateKey, {
+            expiresIn: '20s',
         });
 
     }
