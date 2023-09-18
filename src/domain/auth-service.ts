@@ -60,5 +60,12 @@ export const authService = {
 
     },
 
+    async findRefreshTokenToBlacklist(token: string) {
+        const blockedToken = await usersRepository.findRefreshTokenToBlacklist(token)
+        if (!blockedToken) return false;
+        return true
+
+    },
+
 
 }
