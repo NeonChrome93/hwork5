@@ -36,23 +36,27 @@ authRouter.post('/login',
     })
 
 authRouter.post('/refresh-token', async (req: Request, res: Response) => {
-    const refreshToken = req.cookies.refreshToken
+    const refreshToken = req.cookies.refreshToken + ''
+    console.log(req.headers,req.cookies)
 
 
     if (refreshToken) {
         // Генерация новых токенов на основе переданных данных, например, идентификатора пользователя
         //Проверить нет ли рефреш токена в черном списке
-
+        const blockedToken = await authService.findRefreshTokenToBlacklist(refreshToken)
+        if(blockedToken ) return res.sendStatus(401)
         const userId = jwtService.getUserIdByToken(refreshToken)
         if (!userId) return res.sendStatus(401)
+        console.log({userId})
         const user = await usersRepository.readUserById(userId.toString())
         if (!user) return res.sendStatus(401)
+        await usersRepository.addRefreshTokenToBlacklist(refreshToken)
         const accessToken = jwtService.createJWT(user);
-        const refreshToken = jwtService.generateRefreshToken(user);
+        const  newRefreshToken = jwtService.generateRefreshToken(user);
 
         // Создать метод в репозитории и туда кинуть старый рефрещ токен
         //res.cookie('accessToken', accessToken, {httpOnly: true, secure: true});
-        res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true});
+        res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true});
 
         res.status(200).send({accessToken: accessToken})
     } else {
@@ -66,10 +70,12 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
 
     if (refreshToken) {
 
-        //Проверить нет ли рефреш токена в черном списке
+        const blockedToken = await authService.findRefreshTokenToBlacklist(refreshToken)
+        if(blockedToken ) return res.sendStatus(401)
         const userId = jwtService.getUserIdByToken(refreshToken)
         if (!userId) return res.sendStatus(401)
-        // Создать метод в репозитории и туда кинуть старый рефрещ токен
+        await usersRepository.addRefreshTokenToBlacklist(refreshToken)
+        //помещаем токен в чс
 
         res.sendStatus(204)
     } else {
