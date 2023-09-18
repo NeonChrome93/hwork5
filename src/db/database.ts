@@ -18,6 +18,8 @@ export const blogCollection = client.db(dbName).collection<BlogsType>('blogs')
 export const postCollection = client.db(dbName).collection<PostType>('posts')
 export const usersCollection = client.db(dbName).collection<UserDbModel>( 'users')
 export const commentsCollection = client.db(dbName).collection<CommentsDBType>( 'comments')
+export const tokenToBlacklistCollection = client.db(dbName).collection<{token: string}>( 'blacklist')
+
 
 export async function runDatabase() {
     try {
