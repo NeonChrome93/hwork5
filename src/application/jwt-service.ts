@@ -21,7 +21,7 @@ export const jwtService = {
             return null
         }
     },
- //jwt.decode - можно достать  дату окончания действия токена
+ //jwt.decode - можно достать  дату окончания действия токена +
    generateRefreshToken(user: UserDbModel) { //deviceId
         return jwt.sign({userId: user._id}, configKeys.accessTokenPrivateKey, {
             expiresIn: '20s',
@@ -29,6 +29,6 @@ export const jwtService = {
 
     }
 
-    //создать токен с настройками и вернуть токен в куку createCookieToken
+    //создать токен с настройками и вернуть токен в куку createCookieToken +
 }
 
