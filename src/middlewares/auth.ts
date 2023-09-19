@@ -10,9 +10,9 @@ const users = {
 
 export const authGuardMiddleware = ( req: Request, res : Response, next: NextFunction) => {
     // res.send(shops)
-    console.log('header', req.headers)
+    //console.log('header', req.headers)
     const encode = Buffer.from(`${users.login}:${users.password}`, "utf-8").toString("base64")
-    console.log(encode)
+    //console.log(encode)
     if(req.headers.authorization === `Basic ${encode}`) {
         next();
     }
@@ -27,7 +27,7 @@ export const authMiddleware = async ( req: Request, res : Response, next: NextFu
 
     const token = req.headers.authorization.split(' ')[1];
     const userId = await jwtService.getUserIdByToken(token)
-
+    console.log(token)
 
     if(userId) {
         req.user = await userService.findUserById(userId.toString())
