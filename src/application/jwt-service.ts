@@ -21,13 +21,27 @@ export const jwtService = {
             return null
         }
     },
- //jwt.decode - можно достать  дату окончания действия токена +
-   generateRefreshToken(user: UserDbModel) { //deviceId
-        return jwt.sign({userId: user._id}, configKeys.accessTokenPrivateKey, {
+
+ //jwt.decode - можно достать дату выдачи и сохранить в БД + добавить переменную девайс ID
+   generateRefreshToken(user: UserDbModel, deviceId: string) { //deviceId
+        return jwt.sign({userId: user._id, deviceId: deviceId }, configKeys.accessTokenPrivateKey, {
             expiresIn: '20s',
         });
 
-    }
+    },
+
+    lastActiveDate(token: string) {
+        try {
+            const result : any = jwt.verify(token,configKeys.accessTokenPrivateKey )
+            return new Date(result.iat * 1000).toString()//милесекунды и в строку
+            //дата выписки токена это мое последнее посещение, закинуть в девайс репу
+            console.log(result)
+
+        }
+        catch (error) {
+            return null
+        }
+    },
 
     //создать токен с настройками и вернуть токен в куку createCookieToken +
 }
