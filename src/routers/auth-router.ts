@@ -10,6 +10,7 @@ import {confirmationCodeValidator} from "../middlewares/validations/confirmation
 import {usersRepository} from "../repositories/users/users-repository-database";
 import {confirmationEmailValidation} from "../middlewares/validations/confirmation-email-validation";
 import {userRegistrationEmailValidation} from "../middlewares/validations/user-registration-email-validation";
+import {randomUUID} from "crypto";
 
 export const authRouter = Router({})
 
@@ -22,9 +23,14 @@ authRouter.post('/login',
         const {loginOrEmail, password} = req.body
         const user = await userService.checkCredentials(loginOrEmail, password)
         if (user) {
+            let deviceId = randomUUID()// придумать deviceId
+
+            // взять дату выписки этого токена === lastActiveDate у девайся
+            // сохранить девайс (ip, id, userid, title, lastActiveDate) => swagger
+            // отдать токены
 
             const accessToken = jwtService.createJWT(user);
-            const refreshToken = jwtService.generateRefreshToken(user);
+            const refreshToken = jwtService.generateRefreshToken(user, deviceId); // создать токен с userId & deviceId
 
             res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true});
 
@@ -67,6 +73,10 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) => {
 authRouter.post('/logout', async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken
 
+    //123
+    //wertwergwvb r
+    //123
+    //wertwergwvb r
 
     if (refreshToken) {
 
