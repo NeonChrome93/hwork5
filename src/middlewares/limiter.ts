@@ -11,12 +11,19 @@ export const countApiRequests = async (req: Request, res: Response, next: NextFu
 
 
         const filter = {
-            IP: req.ip,
+            ip: req.ip,
             URL: req.baseUrl || req.originalUrl,
             date: { $gte: new Date(Date.now() - 10000) }
         };
 
         const count = await requestApiCollection.countDocuments(filter);
+        //добавить логику записи в БД
+        const requestData = {
+            ip: req.ip,
+            URL: req.baseUrl || req.originalUrl,
+            date: new Date()
+        };
+        await requestApiCollection.insertOne(requestData);
 
         if(count > MAX_REQUESTS_PER_ENDPOINT) {
            return  res.sendStatus(429)
