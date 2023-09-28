@@ -6,41 +6,45 @@ import {configKeys} from "../config";
 
 export const jwtService = {
 
-     createJWT(user: UserDbModel) {
+    createJWT(user: UserDbModel) {
         const token = jwt.sign({userId: user._id}, configKeys.accessTokenPrivateKey, {expiresIn: '10s'})
         return token
     },
 
-     getUserIdByToken(token: string) {
+    getUserIdByToken(token: string) {
         try {
-         const result : any = jwt.verify(token,configKeys.accessTokenPrivateKey )
+            const result: any = jwt.verify(token, configKeys.accessTokenPrivateKey)
             return result.userId
 
-        }
-        catch (error) {
+        } catch (error) {
             return null
         }
     },
 
- //jwt.decode - можно достать дату выдачи и сохранить в БД + добавить переменную девайс ID
-   generateRefreshToken(user: UserDbModel, deviceId: string) { //deviceId
-        return jwt.sign({userId: user._id, deviceId: deviceId }, configKeys.accessTokenPrivateKey, {
+    //jwt.decode - можно достать дату выдачи и сохранить в БД + добавить переменную девайс ID
+    generateRefreshToken(user: UserDbModel, deviceId: string) { //deviceId
+        return jwt.sign({userId: user._id, deviceId: deviceId}, configKeys.accessTokenPrivateKey, {
             expiresIn: '20s',
         });
 
     },
 
-    lastActiveDate(token: string) {
+    getDeviceIdByToken(token: string) {
         try {
-            const result : any = jwt.verify(token,configKeys.accessTokenPrivateKey )
-            return new Date(result.iat * 1000).toString()//милесекунды и в строку
-            //дата выписки токена это мое последнее посещение, закинуть в девайс репу
-            console.log(result)
+            const result: any = jwt.verify(token, configKeys.accessTokenPrivateKey)
+            return result //==={userId: user._id, deviceId: deviceId}
 
-        }
-        catch (error) {
+        } catch (error) {
             return null
         }
+    },
+
+
+    lastActiveDate(token: string): string {
+        const result: any = jwt.decode(token)
+        return new Date(result.iat * 1000).toISOString()//милесекунды и в строку
+        //дата выписки токена это мое последнее посещение, закинуть в девайс репу
+
     },
 
     //создать токен с настройками и вернуть токен в куку createCookieToken +

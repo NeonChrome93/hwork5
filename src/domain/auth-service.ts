@@ -5,6 +5,8 @@ import {usersRepository} from "../repositories/users/users-repository-database";
 import {userService} from "./users-servise";
 import {emailService} from "../application/email-servise";
 import {randomUUID} from "crypto";
+import {jwtService} from "../application/jwt-service";
+import {devicesService} from "./devices-service";
 
 
 export const authService = {
@@ -60,12 +62,19 @@ export const authService = {
 
     },
 
-    async findRefreshTokenToBlacklist(token: string) {
-        const blockedToken = await usersRepository.findRefreshTokenToBlacklist(token)
-        if (!blockedToken) return false;
-        return true
-
-    },
 
 
+    async login(loginOrEmail: string, password: string, ip: string, title: string): Promise<{accessToken: string, refreshToken: string} | null> {
+        const user = await userService.checkCredentials(loginOrEmail, password)
+        if(!user) return null
+        const accessToken = jwtService.createJWT(user);
+        const deviceId = randomUUID()
+        const refreshToken = jwtService.generateRefreshToken(user, deviceId);
+        const lastActiveDate = jwtService.lastActiveDate(refreshToken)// взять дату выписки этого токена === lastActiveDate у девайся
+        await devicesService.createDevice(ip, deviceId, user._id.toString(), title, lastActiveDate)
+        return {
+            accessToken,
+            refreshToken
+        }
+    }
 }

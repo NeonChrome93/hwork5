@@ -2,7 +2,7 @@ import {Request, Response, Router} from "express";
 import {userService} from "../domain/users-servise";
 import {validationLoginAuth} from "../middlewares/validations/auth-logiin-validation";
 import {jwtService} from "../application/jwt-service";
-import {authMiddleware} from "../middlewares/auth";
+import {authMiddleware, checkRefreshToken} from "../middlewares/auth";
 import {validationCreateUser} from "../middlewares/validations/user-create-validation";
 import {authService} from "../domain/auth-service";
 import nodemailer from "nodemailer";
@@ -11,54 +11,48 @@ import {usersRepository} from "../repositories/users/users-repository-database";
 import {confirmationEmailValidation} from "../middlewares/validations/confirmation-email-validation";
 import {userRegistrationEmailValidation} from "../middlewares/validations/user-registration-email-validation";
 import {randomUUID} from "crypto";
+import {devicesService} from "../domain/devices-service";
+import {devicesRepository} from "../repositories/devices/devices-repository";
+import {devicesCollection} from "../db/database";
+import {countApiRequests} from "../middlewares/limiter";
 
 export const authRouter = Router({})
 
 authRouter.post('/login',
     ...validationLoginAuth,
     async (req: Request, res: Response) => {
-
-        //req.body.loginOrEmail
-        //req.body.password
         const {loginOrEmail, password} = req.body
-        const user = await userService.checkCredentials(loginOrEmail, password)
-        if (user) {
-            let deviceId = randomUUID()// придумать deviceId
-
-            // взять дату выписки этого токена === lastActiveDate у девайся
-            // сохранить девайс (ip, id, userid, title, lastActiveDate) => swagger
-            // отдать токены
-
-            const accessToken = jwtService.createJWT(user);
-            const refreshToken = jwtService.generateRefreshToken(user, deviceId); // создать токен с userId & deviceId
-
-            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true});
-
-            res.status(200).send({accessToken: accessToken})
-
-        } else {
-            res.sendStatus(401)
-        }
+        const result = await authService.login(loginOrEmail, password, req.ip, req.headers['user-agent'] || '') // alt+ enter
+        if(!result) return res.sendStatus(401)
+        res
+            .cookie('refreshToken', result.refreshToken, {httpOnly: true, secure: true})
+            .status(200)
+            .send({accessToken: result.accessToken})
     })
 
-authRouter.post('/refresh-token', async (req: Request, res: Response) => {
-    const refreshToken = req.cookies.refreshToken + ''
-    console.log(req.headers,req.cookies)
+authRouter.post('/refresh-token' , countApiRequests, checkRefreshToken,  async (req: Request, res: Response) => {
+    const refreshToken = req.cookies.refreshToken
 
 
+//добавить миддлвару на наличие токена
     if (refreshToken) {
         // Генерация новых токенов на основе переданных данных, например, идентификатора пользователя
         //Проверить нет ли рефреш токена в черном списке
-        const blockedToken = await authService.findRefreshTokenToBlacklist(refreshToken)
-        if(blockedToken ) return res.sendStatus(401)
-        const userId = jwtService.getUserIdByToken(refreshToken)
-        if (!userId) return res.sendStatus(401)
-        console.log({userId})
-        const user = await usersRepository.readUserById(userId.toString())
+
+        const payload = jwtService.getDeviceIdByToken(refreshToken)
+
+        const user = await usersRepository.readUserById(req.user!._id.toString())
         if (!user) return res.sendStatus(401)
-        await usersRepository.addRefreshTokenToBlacklist(refreshToken)
+
+       //const device = await findDeviceById(payload.deviceId)
+       // if(device.lastActiveDate !== payload.lastActiveDate) return res.sendStatus(401)
+
+        //обновить дату lastActiveDate проверка сравнить ластактивдейт девайса со временм выписки токена, взять
         const accessToken = jwtService.createJWT(user);
-        const  newRefreshToken = jwtService.generateRefreshToken(user);
+        const  newRefreshToken = jwtService.generateRefreshToken(user, payload.deviceId);
+        //узнать дату когда он был создан и присвоить к девайсу
+const lastActiveDate = jwtService.lastActiveDate(newRefreshToken);
+//update device lastActiveDate-> repo
 
         // Создать метод в репозитории и туда кинуть старый рефрещ токен
         //res.cookie('accessToken', accessToken, {httpOnly: true, secure: true});
@@ -70,24 +64,25 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) => {
     }
 
 })
-authRouter.post('/logout', async (req: Request, res: Response) => {
+authRouter.post('/logout', checkRefreshToken, async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken
 
-    //123
-    //wertwergwvb r
-    //123
-    //wertwergwvb r
+    //добавить миддлвару на наличие токена
 
     if (refreshToken) {
 
-        const blockedToken = await authService.findRefreshTokenToBlacklist(refreshToken)
-        if(blockedToken ) return res.sendStatus(401)
-        const userId = jwtService.getUserIdByToken(refreshToken)
-        if (!userId) return res.sendStatus(401)
-        await usersRepository.addRefreshTokenToBlacklist(refreshToken)
-        //помещаем токен в чс
 
-        res.sendStatus(204)
+        const lastActiveDate = jwtService.lastActiveDate(refreshToken)
+
+        const device = await devicesService.findDeviceById(req.deviceId!.toString())
+        if(!device) return res.sendStatus(401)
+        if(device.lastActiveDate !== lastActiveDate) return res.sendStatus(401)
+        await devicesRepository.deleteDevicesById(req.deviceId!.toString())
+        //достать device из БД и сравнить lastActiveDate из БД и из текущего токена
+        //delete device by deviceId
+        //в чс уже не помещает, выйти с текущего устройства
+
+        return res.sendStatus(204)
     } else {
         return res.sendStatus(401)
     }
@@ -96,7 +91,7 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
 })
 
 
-authRouter.post('/registration', ...userRegistrationEmailValidation, async (req: Request, res: Response) => {
+authRouter.post('/registration', countApiRequests, ...userRegistrationEmailValidation, async (req: Request, res: Response) => {
 
 
     await authService.registrationUser({
@@ -109,7 +104,7 @@ authRouter.post('/registration', ...userRegistrationEmailValidation, async (req:
 
 })
 
-authRouter.post('/registration-confirmation', ...confirmationCodeValidator, async (req: Request, res: Response) => {
+authRouter.post('/registration-confirmation', countApiRequests, ...confirmationCodeValidator, async (req: Request, res: Response) => {
     const isConfirmed = await authService.confirmEmail(req.body.code)
     if (isConfirmed) {
         res.sendStatus(204)
@@ -117,7 +112,7 @@ authRouter.post('/registration-confirmation', ...confirmationCodeValidator, asyn
 })
 
 
-authRouter.post('/registration-email-resending', ...confirmationEmailValidation, async (req: Request, res: Response) => {
+authRouter.post('/registration-email-resending',countApiRequests, ...confirmationEmailValidation, async (req: Request, res: Response) => {
     const receivedСode = await authService.resendingCode(req.body.email)
     if (receivedСode) {
         res.sendStatus(204)

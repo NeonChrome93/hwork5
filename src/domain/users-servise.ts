@@ -1,15 +1,20 @@
 
 import {usersRepository} from "../repositories/users/users-repository-database";
-import bcrypt from 'bcrypt'
+
 import {UserCreateModel, UserDbModel, UserViewModel} from "../models/users-models/user.models";
 import {ObjectId} from "mongodb";
 import { QueryUserPaginationType} from "../middlewares/pagination";
 import {PaginationModels} from "../models/pagination/pagination-models";
+import bcrypt from "bcrypt";
 
 
 
 
-
+const hashService = {
+   async generateHash(password: string): Promise<string> {
+        return bcrypt.hash(password, 10)
+    }
+}
 
 
 
@@ -65,6 +70,5 @@ export const userService = {
         const user = await usersRepository.readUserById(id)
         if (!user) return false
         return usersRepository.deleteUser(id)
-    }
-
+    },
 }

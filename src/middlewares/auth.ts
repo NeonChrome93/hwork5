@@ -43,12 +43,12 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
         return
     }
 
-    const userId = await jwtService.getUserIdByToken(refreshToken)
-    const deviceId = await jwtService.getDeviceIdByToken(refreshToken)
 
-    if (userId && deviceId) {
-        req.user = await userService.findUserById(userId.toString())
-        req.deviceId = deviceId
+    const payload = await jwtService.getDeviceIdByToken(refreshToken)
+
+    if (payload.userId && payload.deviceId) {
+        req.user = await userService.findUserById(payload.userId.toString())
+        req.deviceId = payload.deviceId
         next();
     } else res.sendStatus(401)
 }

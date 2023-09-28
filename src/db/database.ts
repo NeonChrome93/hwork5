@@ -4,6 +4,7 @@ import {PostType} from "../models/posts-models/post-models";
 import dotenv from 'dotenv'
 import {UserDbModel} from "../models/users-models/user.models";
 import {CommentsDBType} from "../models/comments-models/comments-models";
+import {DevicesDBType} from "../models/devices-models";
 dotenv.config()
 
 const mongoUri = process.env.MONGO_URL
@@ -18,7 +19,8 @@ export const blogCollection = client.db(dbName).collection<BlogsType>('blogs')
 export const postCollection = client.db(dbName).collection<PostType>('posts')
 export const usersCollection = client.db(dbName).collection<UserDbModel>( 'users')
 export const commentsCollection = client.db(dbName).collection<CommentsDBType>( 'comments')
-export const tokenToBlacklistCollection = client.db(dbName).collection<{token: string}>( 'blacklist')
+export const requestApiCollection = client.db(dbName).collection<{ ip: string, URL: string, date: Date }>( 'requestApi')
+export const devicesCollection = client.db(dbName).collection<DevicesDBType>( 'devices')
 
 
 export async function runDatabase() {

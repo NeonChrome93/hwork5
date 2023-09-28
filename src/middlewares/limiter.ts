@@ -1,0 +1,32 @@
+import {Request, Response, NextFunction} from "express";
+
+
+import {requestApiCollection} from "../db/database";
+
+const MAX_REQUESTS_PER_ENDPOINT = 5;
+
+
+export const countApiRequests = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+
+        const filter = {
+            IP: req.ip,
+            URL: req.baseUrl || req.originalUrl,
+            date: { $gte: new Date(Date.now() - 10000) }
+        };
+
+        const count = await requestApiCollection.countDocuments(filter);
+
+        if(count > MAX_REQUESTS_PER_ENDPOINT) {
+           return  res.sendStatus(429)
+        } else {
+            next();
+        }
+
+
+    } catch (err) {
+        console.error('Ошибка при подсчете документов:', err);
+        res.sendStatus(500);
+    }
+};
