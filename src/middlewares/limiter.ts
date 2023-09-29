@@ -25,7 +25,7 @@ export const countApiRequests = async (req: Request, res: Response, next: NextFu
         };
         await requestApiCollection.insertOne(requestData);
 
-        if(count > MAX_REQUESTS_PER_ENDPOINT) {
+        if(count >= MAX_REQUESTS_PER_ENDPOINT) {
            return  res.sendStatus(429)
         } else {
             next();
