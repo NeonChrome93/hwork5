@@ -18,8 +18,7 @@ import {countApiRequests} from "../middlewares/limiter";
 
 export const authRouter = Router({})
 
-authRouter.post('/login',
-    ...validationLoginAuth,
+authRouter.post('/login', countApiRequests,...validationLoginAuth,
     async (req: Request, res: Response) => {
         const {loginOrEmail, password} = req.body
         const result = await authService.login(loginOrEmail, password, req.ip, req.headers['user-agent'] || '') // alt+ enter
