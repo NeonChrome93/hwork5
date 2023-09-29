@@ -27,7 +27,7 @@ export const authService = {
         }
         await usersRepository.createUser(newUser);
         try {
-            await emailService.sendEmail(newUser.email, newUser.confirmationCode, 'It is your code')
+            emailService.sendEmail(newUser.email, newUser.confirmationCode, 'It is your code')
         } catch (e) {
             console.log('registration user email error', e);
         }

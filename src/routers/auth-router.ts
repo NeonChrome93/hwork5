@@ -24,7 +24,7 @@ authRouter.post('/login',
         const {loginOrEmail, password} = req.body
         const result = await authService.login(loginOrEmail, password, req.ip, req.headers['user-agent'] || '') // alt+ enter
         if(!result) return res.sendStatus(401)
-        res
+      return  res
             .cookie('refreshToken', result.refreshToken, {httpOnly: true, secure: true})
             .status(200)
             .send({accessToken: result.accessToken})
@@ -106,17 +106,16 @@ authRouter.post('/registration', countApiRequests, ...userRegistrationEmailValid
 
 authRouter.post('/registration-confirmation', countApiRequests, ...confirmationCodeValidator, async (req: Request, res: Response) => {
     const isConfirmed = await authService.confirmEmail(req.body.code)
-    if (isConfirmed) {
-        res.sendStatus(204)
-    } else res.sendStatus(400)
+    if (isConfirmed) return res.sendStatus(204)
+   return res.sendStatus(400)
 })
 
 
-authRouter.post('/registration-email-resending',countApiRequests, ...confirmationEmailValidation, async (req: Request, res: Response) => {
+authRouter.post('/registration-email-resending', countApiRequests, ...confirmationEmailValidation, async (req: Request, res: Response) => {
     const receivedСode = await authService.resendingCode(req.body.email)
-    if (receivedСode) {
-        res.sendStatus(204)
-    } else res.sendStatus(400)
+    if (receivedСode)  return  res.sendStatus(204)
+
+    return res.sendStatus(400)
 //юзеру может не прийти код, сгенерировать новый,записать в базу,  переслать код еще раз по емайл новый код
 })
 
