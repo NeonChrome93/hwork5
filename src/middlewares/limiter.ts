@@ -12,15 +12,15 @@ export const countApiRequests = async (req: Request, res: Response, next: NextFu
 
         const filter = {
             ip: req.ip,
-            URL: req.baseUrl || req.originalUrl,
+            URL: req.method + req.baseUrl + req.originalUrl,
             date: { $gte: new Date(Date.now() - 10000) }
         };
-
+        console.log(filter.URL)
         const count = await requestApiCollection.countDocuments(filter);
         //добавить логику записи в БД
         const requestData = {
             ip: req.ip,
-            URL: req.baseUrl || req.originalUrl,
+            URL: req.method + req.baseUrl + req.originalUrl,
             date: new Date()
         };
         await requestApiCollection.insertOne(requestData);
