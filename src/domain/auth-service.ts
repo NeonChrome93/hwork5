@@ -7,6 +7,7 @@ import {emailService} from "../application/email-servise";
 import {randomUUID} from "crypto";
 import {jwtService} from "../application/jwt-service";
 import {devicesService} from "./devices-service";
+import {devicesRepository} from "../repositories/devices/devices-repository";
 
 
 export const authService = {
@@ -75,6 +76,18 @@ export const authService = {
         return {
             accessToken,
             refreshToken
+        }
+    },
+
+    async refresh(user: UserDbModel,  refreshToken: string) : Promise<{accessToken: string, newRefreshToken: string} | null> {
+        const payload = jwtService.getDeviceIdByToken(refreshToken)
+        const accessToken = jwtService.createJWT(user);
+        const newRefreshToken = jwtService.generateRefreshToken(user, payload.deviceId);
+        const lastActiveDate = jwtService.lastActiveDate(newRefreshToken);
+        await devicesRepository.updateDeviceLastActiveDate(payload.deviceId, lastActiveDate)
+        return {
+            accessToken,
+            newRefreshToken
         }
     }
 }
