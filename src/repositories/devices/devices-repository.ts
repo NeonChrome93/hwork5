@@ -1,7 +1,7 @@
 import {DevicesDBType, DeviceViewModel} from "../../models/devices-models";
-import {devicesCollection} from "../../db/database";
-import {Filter} from "mongodb";
-import {CommentsDBType} from "../../models/comments-models/comments-models";
+import {commentsCollection, devicesCollection} from "../../db/database";
+import {Filter, ObjectId} from "mongodb";
+import {CommentsDBType, UpdateCommentType} from "../../models/comments-models/comments-models";
 
 export const devicesRepository = {
 
@@ -16,6 +16,15 @@ export const devicesRepository = {
 
     async findAllUserDevices(userId: string) :Promise<DeviceViewModel[]>{
         return  devicesCollection.find({userId}, {projection: {_id: 0, userId: 0}}).toArray()
+    },
+
+    async updateDeviceLastActiveDate(deviceId: string ,lastActiveDate: string): Promise<boolean> {
+
+        const res = await devicesCollection.updateOne({deviceId: deviceId}, {
+                $set: {lastActiveDate: lastActiveDate}
+            }
+        )
+        return res.matchedCount === 1;
     },
 
     async deleteDeviceExpectCurrent( userId: string,deviceId: string): Promise<boolean> {
