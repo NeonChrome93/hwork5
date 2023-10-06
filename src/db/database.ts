@@ -15,6 +15,7 @@ const client = new MongoClient(mongoUri);
 
 
 const dbName = 'blogs-posts'
+//сделать схему + модель
 export const blogCollection = client.db(dbName).collection<BlogsType>('blogs')
 export const postCollection = client.db(dbName).collection<PostType>('posts')
 export const usersCollection = client.db(dbName).collection<UserDbModel>( 'users')
