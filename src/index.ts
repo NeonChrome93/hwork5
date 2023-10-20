@@ -1,5 +1,5 @@
 import {app} from "./app";
-import {blogCollection, runDatabase} from "./db/database";
+import {runDatabase} from "./db/database";
 
 
 const port = process.env.PORT || 5000;
