@@ -8,10 +8,6 @@ import {DevicesDBType} from "../models/devices-models";
 import mongoose from 'mongoose'
 dotenv.config()
 
-const mongoUri = process.env.MONGO_URL
-if(!mongoUri) {
-    throw new Error("mongoUri not found")
-}
 //const client = new MongoClient(mongoUri);
 
 
@@ -31,7 +27,12 @@ export async function runDatabase() {
     try {
         // await client.connect()
         // await client.db('test').command({ping: 1})
-        await mongoose.connect(mongoUri + "/" + dbName )
+
+        const mongoUri = process.env.MONGO_URL
+        if(!mongoUri) {
+            throw new Error("mongoUri not found")
+        }
+        await mongoose.connect(mongoUri, {dbName} )
         console.log('Connect successfully to Mongo database ')
 
     } catch {
