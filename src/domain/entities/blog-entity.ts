@@ -1,7 +1,27 @@
-const blogSchema = {
-    //name: String, {require}
-    //
+import mongoose from "mongoose";
+import {UserDbModel} from "../../models/users-models/user.models";
+import {BlogsType} from "../../models/blogs-models/blogs-models";
+import {ObjectId} from "mongodb";
+
+export type BlogDbType = {
+    _id: ObjectId,
+    name: string,
+    description: string,
+    websiteUrl: string,
+    createdAt: Date,
+    isMembership: boolean
 }
+
+
+
+const blogSchema = new mongoose.Schema<BlogDbType>({
+    name: {type: String, require: true},
+    description: {type: String, require: true},
+    websiteUrl: {type: String, require: true},
+    createdAt: {type: Date, default: new Date},
+    isMembership: {type: Boolean, default: false}
+
+})
 //..
-//@ts-ignore
-const BlogEntityModel = Model<blogSchema>
+
+export const BlogModel = mongoose.model<mongoose.Schema<BlogDbType>>('blogs', blogSchema)
