@@ -8,7 +8,7 @@ export type CommentsDBType = {
         userId: string
         userLogin: string
     }
-    createdAt: string
+    createdAt: Date
 }
 
 export type CreateCommentType = {

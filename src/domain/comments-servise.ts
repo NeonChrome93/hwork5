@@ -2,7 +2,13 @@ import {CommentsDBType, CommentsViewType, UpdateCommentType} from "../models/com
 import {ObjectId} from "mongodb";
 import {commentRepository} from "../repositories/comments/comments-repository-database";
 
-
+// func(() => {})
+// func(() => {//other logic})
+//
+// const func = (callback: (arg: any)=> void) => {
+//     //logic
+//    someFunc()
+// }
 
 export const commentServise = {
 
@@ -26,14 +32,14 @@ export const commentServise = {
                 userId,
                 userLogin
             },
-            createdAt: new Date().toISOString()
+            createdAt: new Date()
         }
         await commentRepository.createComment(newComment)
         return {
             id: newComment._id.toString(),
             content,
             commentatorInfo: newComment.commentatorInfo,
-            createdAt: newComment.createdAt
+            createdAt: newComment.createdAt.toISOString()
         }
     },
 

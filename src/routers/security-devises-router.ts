@@ -21,8 +21,8 @@ securityDevisesRouter.get('/devices', checkRefreshToken, async (req: Request, re
 })
 
 securityDevisesRouter.delete('/devices', checkRefreshToken, async (req: Request, res: Response) => {
-    console.log(req.deviceId)
-    await devicesService.deleteDeviceExpectCurrent(req.deviceId!.toString(),req.user!._id.toString() )
+    //console.log(req.deviceId)
+    await devicesService.deleteDeviceExpectCurrent(req.user!._id.toString(),req.deviceId!.toString() )
     res.sendStatus(204)
 
 //подцепить миддлвару

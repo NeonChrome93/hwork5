@@ -2,7 +2,6 @@ import {MongoClient} from "mongodb";
 import {BlogsType} from "../models/blogs-models/blogs-models";
 import {PostType} from "../models/posts-models/post-models";
 import dotenv from 'dotenv'
-import {UserDbModel} from "../models/users-models/user.models";
 import {CommentsDBType} from "../models/comments-models/comments-models";
 import {DevicesDBType} from "../models/devices-models";
 import mongoose from 'mongoose'

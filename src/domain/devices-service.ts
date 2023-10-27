@@ -1,6 +1,5 @@
 import {devicesRepository} from "../repositories/devices/devices-repository";
-import {devicesCollection} from "../db/database";
-import {UserDbModel} from "../models/users-models/user.models";
+//import {devicesCollection} from "../db/database";
 import {usersRepository} from "../repositories/users/users-repository-database";
 import {DevicesDBType} from "../models/devices-models";
 

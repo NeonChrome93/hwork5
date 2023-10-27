@@ -1,5 +1,6 @@
-import {UserDbModel} from "./models/users-models/user.models";
+
 import {DevicesDBType} from "./models/devices-models";
+import {UserDbModel} from "./domain/entities/users-entity";
 
 declare global {
     namespace Express {

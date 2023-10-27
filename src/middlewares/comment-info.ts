@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {validationResult} from "express-validator";
-import {commentsCollection} from "../db/database";
+//import {commentsCollection} from "../db/database";
 import {ObjectId} from "mongodb";
 import {jwtService} from "../application/jwt-service";
 import {userService} from "../domain/users-servise";

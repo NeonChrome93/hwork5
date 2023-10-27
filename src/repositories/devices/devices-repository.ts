@@ -1,39 +1,43 @@
 import {DevicesDBType, DeviceViewModel} from "../../models/devices-models";
-import {commentsCollection, devicesCollection} from "../../db/database";
+//import {commentsCollection, devicesCollection} from "../../db/database";
+import {DeviceModel} from "../../domain/entities/devices-entity"
 import {Filter, ObjectId} from "mongodb";
 import {CommentsDBType, UpdateCommentType} from "../../models/comments-models/comments-models";
+import {BlogModel} from "../../domain/entities/blog-entity";
 
 export const devicesRepository = {
 
     async createDevice(device: DevicesDBType) :Promise<DevicesDBType> {
-        await devicesCollection.insertOne({...device})
+        //await deviceModel.create(device)
+        const _device = new DeviceModel(device)
+        await _device.save()
         return device
     },
 
     async findDevice(deviceId: string): Promise<DevicesDBType | null> {
-        return  await devicesCollection.findOne({deviceId})
+        return DeviceModel.findOne({deviceId})
     },
 
     async findAllUserDevices(userId: string) :Promise<DeviceViewModel[]>{
-        return  devicesCollection.find({userId}, {projection: {_id: 0, userId: 0}}).toArray()
+        return  DeviceModel.find({userId}, {projection: {_id: 0, userId: 0}}).lean()
     },
 
     async updateDeviceLastActiveDate(deviceId: string ,lastActiveDate: string): Promise<boolean> {
 
-        const res = await devicesCollection.updateOne({deviceId: deviceId}, {
+        const res = await DeviceModel.updateOne({deviceId: deviceId}, {
                 $set: {lastActiveDate: lastActiveDate}
             }
-        )
+        ).exec()
         return res.matchedCount === 1;
     },
 
     async deleteDeviceExpectCurrent( userId: string,deviceId: string): Promise<boolean> {
-        const res = await devicesCollection.deleteMany({ userId: userId, deviceId: { $ne: deviceId}})
+        const res = await DeviceModel.deleteMany({ userId: userId, deviceId: { $ne: deviceId}}).exec()
         return res.acknowledged
     },
 
     async deleteDevicesById(deviceId: string): Promise<boolean> {
-        const res = await devicesCollection.deleteOne({deviceId: deviceId})
+        const res = await DeviceModel.deleteOne({deviceId: deviceId}).exec()
         return res.acknowledged
 
     },

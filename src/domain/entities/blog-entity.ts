@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import {UserDbModel} from "../../models/users-models/user.models";
 import {BlogsType} from "../../models/blogs-models/blogs-models";
 import {ObjectId} from "mongodb";
 

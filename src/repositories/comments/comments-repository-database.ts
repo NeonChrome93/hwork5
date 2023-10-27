@@ -1,31 +1,34 @@
 import {QueryPaginationType} from "../../middlewares/pagination";
-import {commentsCollection} from "../../db/database";
+//import {commentsCollection} from "../../db/database";
+
 import {Filter, ObjectId} from "mongodb";
 import {
     CommentsDBType,
     CommentsViewType,
     UpdateCommentType
 } from "../../models/comments-models/comments-models";
+import {CommentModel} from "../../domain/entities/comments-entity";
+import {FilterQuery} from "mongoose";
 
 
 
 export const commentRepository = {
 
     async readCommentByPostId(postId: string, pagination: QueryPaginationType) {
-        const filter: Filter<CommentsDBType> = {postId}
-        const comments = await commentsCollection
+        const filter: FilterQuery<CommentsDBType> = {postId}
+        const comments = await CommentModel
             .find(filter)
             .sort({[pagination.sortBy]: pagination.sortDirection})
             .skip(pagination.skip)
             .limit(pagination.pageSize)
-            .toArray()
+            .exec()
 
-        const totalCount = await commentsCollection.countDocuments(filter)
+        const totalCount = await CommentModel.countDocuments(filter).exec()
         const items: CommentsViewType[] = comments.map((c: CommentsDBType) => ({
             id: c._id.toString(),
             content: c.content,
             commentatorInfo: c.commentatorInfo,
-            createdAt: c.createdAt
+            createdAt: c.createdAt.toISOString()
         }))
 
         const pagesCount = Math.ceil(totalCount / pagination.pageSize);
@@ -40,7 +43,7 @@ export const commentRepository = {
 
     async readCommentId(id: string): Promise<CommentsViewType | null> {
 
-        const comment: CommentsDBType | null = await commentsCollection.findOne({_id: new ObjectId(id)})
+        const comment: CommentsDBType | null = await CommentModel.findOne({_id: id})
 
         if (!comment) {
             return null
@@ -49,29 +52,30 @@ export const commentRepository = {
             id: comment._id.toString(),
             content: comment.content,
             commentatorInfo: comment.commentatorInfo,
-            createdAt: comment.createdAt
+            createdAt: comment.createdAt.toISOString()
         }
     },
 
     async createComment(newComment: CommentsDBType): Promise<boolean> {
 
-        await commentsCollection.insertOne({...newComment})
+        await CommentModel.create({...newComment})
         return true
     },
 
     async updateComment(commentId: string, newUpdateRequest: UpdateCommentType): Promise<boolean> {
 
-        const res = await commentsCollection.updateOne({_id: new ObjectId(commentId)}, {
+        const res = await  CommentModel.updateOne({_id: new ObjectId(commentId)}, {
                 $set: {content: newUpdateRequest.content}
             }
-        )
+        ).exec()
+
         return res.matchedCount === 1;
     },
 
     async deleteComment(commentId: string): Promise<boolean> {
         try {
             const filter = {_id: new ObjectId(commentId)}
-            const res = await commentsCollection.deleteOne(filter)
+            const res = await  CommentModel.deleteOne(filter).exec()
             return res.deletedCount === 1;
         } catch (e) {
             return false
@@ -80,7 +84,7 @@ export const commentRepository = {
 
     async deleteAllComments(): Promise<boolean> {
         // dbLocal.blogs = [];
-        await commentsCollection.deleteMany({})
+        await  CommentModel.deleteMany({})
         return true
     }
 }

@@ -6,17 +6,17 @@ export type UserCreateModel = {
     password: string
 }
 
-export type UserDbModel = {
-    _id: ObjectId,
-    login: string,
-    email: string,
-    passwordSalt: string,
-    passwordHash: string,
-    createdAt: string,
-    confirmationCode: string,
-    isConfirmed: boolean
-
-}
+// export type UserDbModel = {
+//     _id: ObjectId,
+//     login: string,
+//     email: string,
+//     passwordSalt: string,
+//     passwordHash: string,
+//     createdAt: string,
+//     confirmationCode: string,
+//     isConfirmed: boolean
+//
+// }
 
 export type UserViewModel = {
     id: string

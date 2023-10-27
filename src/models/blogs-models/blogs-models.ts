@@ -1,7 +1,8 @@
-import {WithId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 
 export type BlogsType =
     {
+
         "name": string,
         "description": string,
         "websiteUrl": string,

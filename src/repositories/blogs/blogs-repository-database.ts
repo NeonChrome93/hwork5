@@ -3,8 +3,9 @@ import {
     BlogsType,
     UpdateBlogType
 } from "../../models/blogs-models/blogs-models";
-import {blogCollection,} from "../../db/database";
+import {BlogDbType, BlogModel} from "../../domain/entities/blog-entity"
 import {ObjectId} from "mongodb";
+import {FilterQuery, UpdateQuery} from "mongoose";
 import {QueryPaginationType} from "../../middlewares/pagination";
 import {PaginationModels} from "../../models/pagination/pagination-models";
 
@@ -15,22 +16,22 @@ export const blogRepository = {
 
     async readBlogs(pagination: QueryPaginationType): Promise<PaginationModels<BlogsOutputType[]>> {
 
-        const filter = {name: {$regex: pagination.searchNameTerm, $options: 'i'}}
+        const filter: FilterQuery<BlogDbType> = {name: {$regex: pagination.searchNameTerm, $options: 'i'}}
 
-        const blogs = await blogCollection
-            .find(filter)
+        const blogs = await BlogModel
+            .find(filter, null, {lean: true})
             .sort({[pagination.sortBy]: pagination.sortDirection})
             .skip(pagination.skip)
             .limit(pagination.pageSize)
-            .toArray();
+            .exec()
 
-        const totalCount = await blogCollection.countDocuments(filter)
-        const items = blogs.map((b) => ({
+        const totalCount = await BlogModel.countDocuments(filter).exec()
+        const items: BlogsOutputType[] = blogs.map((b) => ({
             id: b._id.toString(),
             name: b.name,
             description: b.description,
             websiteUrl: b.websiteUrl,
-            createdAt: b.createdAt,
+            createdAt: b.createdAt.toISOString(),
             isMembership: b.isMembership
 
         }))
@@ -39,7 +40,7 @@ export const blogRepository = {
             pagesCount: pagesCount === 0 ? 1 : pagesCount,
             page: pagination.pageNumber,
             pageSize: pagination.pageSize,
-            totalCount,
+            totalCount: totalCount,
             items
         }
     },
@@ -49,7 +50,7 @@ export const blogRepository = {
         // let findId = dbLocal.blogs.find(b => b.id === id)
         // return findId
         // return (await client.db('test').collections<blogsType>('blogs')).find(b => b.id === id).toArray()
-        const blog = await blogCollection.findOne({_id: new ObjectId(id)});
+        const blog = await BlogModel.findOne({_id: new ObjectId(id)}).exec()//logic
 
         if (!blog) {
             return null;
@@ -77,9 +78,13 @@ export const blogRepository = {
         //     isMembership: false //false Swagger
         // }//add mapping
         //TODO save in database
-        const res = await blogCollection.insertOne({...newBlog});
+
+        const _blog = new BlogModel(newBlog)
+        console.log(_blog)
+        await _blog.save();
+
         return {
-            id: res.insertedId.toString(),
+            id: _blog._id.toString(),
             ...newBlog
         }
 
@@ -91,14 +96,14 @@ export const blogRepository = {
         // blogUpdate.name = newUpdateRequest.name,
         // blogUpdate.description = newUpdateRequest.description,
         // blogUpdate.websiteUrl = newUpdateRequest.websiteUrl
-        const res = await blogCollection.updateOne({_id: new ObjectId(id)}, {
+        const res = await BlogModel.updateOne({_id: new ObjectId(id)}, {
                 $set: {
                     name: newUpdateRequest.name,
                     description: newUpdateRequest.description, websiteUrl: newUpdateRequest.websiteUrl
                 }
             }
-        )
-        return res.matchedCount === 1;
+        ).exec()
+        return res.matchedCount === 1
 
     },
 
@@ -106,8 +111,8 @@ export const blogRepository = {
     async deleteBlogs(id: string): Promise<boolean> {
 
         try {
-            const filter = {_id: new ObjectId(id)}
-            const res = await blogCollection.deleteOne(filter)
+            const filter = {_id: id}
+            const res = await BlogModel.deleteOne(filter).exec()
             return res.deletedCount === 1
         } catch (e) {
             return false
@@ -117,7 +122,7 @@ export const blogRepository = {
 
     async deleteAllBlogs(): Promise<boolean> {
         // dbLocal.blogs = [];
-        await blogCollection.deleteMany({})
+        await BlogModel.deleteMany({})
         return true
     }
 

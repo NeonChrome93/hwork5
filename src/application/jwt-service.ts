@@ -1,7 +1,7 @@
 import jwt, {JwtPayload} from 'jsonwebtoken'
-import {UserDbModel} from "../models/users-models/user.models";
 import {ObjectId} from "mongodb";
 import {configKeys} from "../config";
+import {UserDbModel} from "../domain/entities/users-entity";
 
 
 export const jwtService = {

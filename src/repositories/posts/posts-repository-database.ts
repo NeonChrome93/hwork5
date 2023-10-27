@@ -1,4 +1,4 @@
-import { postCollection} from "../../db/database";
+//import { postCollection} from "../../db/database";
 import {
     PostOutputType,
     PostType,
@@ -7,28 +7,30 @@ import {
 import {Filter, ObjectId} from "mongodb";
 import {QueryPaginationType} from "../../middlewares/pagination";
 import {PaginationModels} from "../../models/pagination/pagination-models";
+import {PostModel} from "../../domain/entities/post-entity";
+import {FilterQuery} from "mongoose";
 
 
 export const postsRepository = {
 
     async readPosts(pagination: QueryPaginationType): Promise<PaginationModels<PostOutputType[]>> {
 
-        const posts = await postCollection
+        const posts = await PostModel
             .find({})
             .sort({[pagination.sortBy]: pagination.sortDirection})
             .skip(pagination.skip)
             .limit(pagination.pageSize)
-            .toArray()
+            .exec()
 
-        const totalCount = await postCollection.countDocuments()
-        const items = posts.map((p) => ({
+        const totalCount = await PostModel.countDocuments().exec()
+        const items :PostOutputType[] = posts.map((p) => ({
             id: p._id.toString(),
             title: p.title,
             shortDescription: p.shortDescription,
             content: p.content,
             blogId: p.blogId,
             blogName: p.blogName,
-            createdAt: p.createdAt
+            createdAt: p.createdAt.toISOString()
 
         }))
         const pagesCount = Math.ceil(totalCount / pagination.pageSize);
@@ -45,7 +47,7 @@ export const postsRepository = {
 
 
     async readPostId(postId: string) {
-        const post = await postCollection.findOne({_id: new ObjectId(postId)});
+        const post = await PostModel.findOne({_id: new ObjectId(postId)}).exec();
 
         if (!post) {
             return null;
@@ -64,21 +66,23 @@ export const postsRepository = {
     },
 
     async createPost(newPost: PostType): Promise<PostOutputType> {
-        const res = await postCollection.insertOne({...newPost});
+
+        const res = new PostModel(newPost)
+        await res.save()
         return {
-            id: res.insertedId.toString(),
+            id: res._id.toString(),
             ...newPost
         }
     },
 
     async updatePosts(postId: string, newUpdateRequest: UpdatePostType): Promise<boolean> {
 
-            const res = await postCollection.updateOne({_id: new ObjectId(postId)}, {
+            const res = await PostModel.updateOne({_id: new ObjectId(postId)}, {
                 $set: {
                     title: newUpdateRequest.title, shortDescription: newUpdateRequest.shortDescription,
                     content: newUpdateRequest.content, blogId: newUpdateRequest.blogId
                 }
-            })
+            }).exec()
             return res.matchedCount === 1;
 
     },
@@ -87,7 +91,7 @@ export const postsRepository = {
 
             try {
                 const filter = {_id: new ObjectId(postId)}
-                const res = await postCollection.deleteOne(filter)
+                const res = await PostModel.deleteOne(filter).exec()
                 return res.deletedCount === 1;
             } catch (e) {
                 return false
@@ -97,20 +101,20 @@ export const postsRepository = {
     },
 
     async deleteAllPosts() {
-        await postCollection.deleteMany({});
+        await PostModel.deleteMany({});
         return true
     },
 
     async readPostsByBlogId(blogId: string, pagination: QueryPaginationType) {
-        const filter: Filter<PostType> = {blogId}
-        const posts = await postCollection
+        const filter: FilterQuery<PostType> = {blogId}
+        const posts = await PostModel
             .find(filter)
             .sort({[pagination.sortBy]: pagination.sortDirection})
             .skip(pagination.skip)
             .limit(pagination.pageSize)
-            .toArray()
+            .exec()
 
-        const totalCount = await postCollection.countDocuments(filter)
+        const totalCount = await PostModel.countDocuments(filter).exec()
         const items = posts.map((p) => ({
             id: p._id.toString(),
             title: p.title,

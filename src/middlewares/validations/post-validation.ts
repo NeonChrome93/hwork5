@@ -1,8 +1,8 @@
 import {body} from "express-validator";
 import {inputValidationMiddleware} from "./input-validation-middleware";
 //import {dbLocal} from "../db/db-local";
-import {blogCollection} from "../../db/database";
 import {ObjectId} from "mongodb";
+import {BlogModel} from "../../domain/entities/blog-entity";
 
 export const validationCreateUpdatePost = [
     body('title').notEmpty().withMessage('title is required'),
@@ -17,7 +17,7 @@ export const validationCreateUpdatePost = [
     body('blogId').notEmpty().withMessage('blogId is required'),
     body('blogId').isString().trim().withMessage('blogId should be string'),
     body('blogId').custom(async (id) => {
-        let findId = await blogCollection.findOne({_id: new ObjectId(id)})
+        let findId = await BlogModel.findOne({_id: new ObjectId(id)})
        // console.log(value, findId, dbLocal.blogs)
         if (!findId) {
             throw new Error('blog not found');

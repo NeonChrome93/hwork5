@@ -1,11 +1,12 @@
 
 import {usersRepository} from "../repositories/users/users-repository-database";
 
-import {UserCreateModel, UserDbModel, UserViewModel} from "../models/users-models/user.models";
+import {UserCreateModel,  UserViewModel} from "../models/users-models/user.models";
 import {ObjectId} from "mongodb";
 import { QueryUserPaginationType} from "../middlewares/pagination";
 import {PaginationModels} from "../models/pagination/pagination-models";
 import bcrypt from "bcrypt";
+import {UserDbModel} from "./entities/users-entity";
 
 
 
@@ -34,16 +35,19 @@ export const userService = {
             email: userCreateModel.email,
             passwordHash: passwordHash,
             passwordSalt: passwordSalt,
-            createdAt: new Date().toISOString(),
+            createdAt: new Date(),
             confirmationCode: '123',
-            isConfirmed: true //by SA / false by registration
+            isConfirmed: true,
+            passwordRecoveryCode: null,
+            expirationDateOfRecoveryCode: null
+
         }
         await usersRepository.createUser(newUser)
         return {
             id: newUser._id.toString(),
             login: newUser.login,
             email: newUser.email,
-            createdAt: newUser.createdAt
+            createdAt: newUser.createdAt.toISOString()
         }
     },
 
