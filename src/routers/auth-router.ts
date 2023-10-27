@@ -13,8 +13,11 @@ import {userRegistrationEmailValidation} from "../middlewares/validations/user-r
 import {randomUUID} from "crypto";
 import {devicesService} from "../domain/devices-service";
 import {devicesRepository} from "../repositories/devices/devices-repository";
-import {devicesCollection} from "../db/database";
+//import {devicesCollection} from "../db/database";
 import {countApiRequests} from "../middlewares/limiter";
+import {userNewPasswordValidation} from "../middlewares/validations/user-new-password-validation";
+import {body} from "express-validator";
+import {inputValidationMiddleware} from "../middlewares/validations/input-validation-middleware";
 
 export const authRouter = Router({})
 
@@ -95,6 +98,24 @@ authRouter.post('/registration-confirmation', countApiRequests, ...confirmationC
     if (isConfirmed) return res.sendStatus(204)
     return res.sendStatus(400)
 })
+
+authRouter.post("/password-recovery", countApiRequests, body('email').isEmail(),inputValidationMiddleware, async (req: Request, res: Response) => {
+    const result = await authService.passwordRecovery(req.body.email)
+   res.sendStatus(204)
+})
+
+authRouter.post('/new-password', countApiRequests, ...userNewPasswordValidation, async (req: Request, res: Response) => {
+ const result = await authService.newPasswordSet(req.body.newPassword, req.body.recoveryCode)
+    //0. валидация req.body
+    //1. найти юзера по recoveryCode(если юзера нет в бд, кинуть ошибку)
+    //2. поменять пароль юзера на новый
+    //3. сохранить юзера в бд
+    if(!result){
+        res.sendStatus(400)
+    }
+    else res.sendStatus(204)
+})
+
 
 
 authRouter.post('/registration-email-resending', countApiRequests, ...confirmationEmailValidation, async (req: Request, res: Response) => {
