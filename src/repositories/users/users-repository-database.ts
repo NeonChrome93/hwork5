@@ -1,9 +1,10 @@
-import {usersCollection} from "../../db/database";
+//import {usersCollection} from "../../db/database";
 import {ModifyResult, ObjectId} from "mongodb";
-import {UserDbModel, UserViewModel} from "../../models/users-models/user.models";
+import { UserViewModel} from "../../models/users-models/user.models";
 import {QueryUserPaginationType} from "../../middlewares/pagination";
 import {PaginationModels} from "../../models/pagination/pagination-models";
 import {randomUUID} from "crypto";
+import {UserDbModel, UserModel} from "../../domain/entities/users-entity";
 
 export const usersRepository = {
 
@@ -16,19 +17,19 @@ export const usersRepository = {
             ]
         })
 
-        const users = await usersCollection
+        const users = await UserModel
             .find(filter)
             .sort({[pagination.sortBy]: pagination.sortDirection})
             .skip(pagination.skip)
             .limit(pagination.pageSize)
-            .toArray();
+            .exec()
 
-        const totalCount = await usersCollection.countDocuments(filter)
+        const totalCount = await UserModel.countDocuments(filter).exec()
         const items = users.map((u) => ({
             id: u._id.toString(),
             login: u.login,
             email: u.email,
-            createdAt: u.createdAt,
+            createdAt: u.createdAt.toISOString()
 
 
         }))
@@ -44,27 +45,40 @@ export const usersRepository = {
 
 
     async readUserById(id: string): Promise<UserDbModel | null> {
-        const user = await usersCollection.findOne({_id: new ObjectId(id)});
+        const user :UserDbModel | null = await UserModel.findOne({_id: new ObjectId(id)});
         if (!user) {
             return null;
         }
         return user
     },
 
-    async findByLoginOrEmail(loginOrEmail: string) {
-        return await usersCollection.findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]})
+    async findByLoginOrEmail(loginOrEmail: string): Promise<UserDbModel | null>{
+        return UserModel.findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]})
     },
 
+    async findUserByRecoveryCode(recoveryCode: string): Promise<UserDbModel | null> {
+        const user :UserDbModel | null = await UserModel.findOne({ passwordRecoveryCode: recoveryCode});
+        if (!user) {
+            return null;
+        }
+        return user
+    },
 
-    async createUser(newUser: UserDbModel) {
-        return usersCollection.insertOne({...newUser})
+    async createUser(newUser: UserDbModel)  {
+        return UserModel.create({...newUser})
+    },
+
+    async saveUser(newUser: UserDbModel) {
+        const user = new UserModel(newUser)
+        await user.save()
+        return user
     },
 
     async deleteUser(id: string): Promise<boolean> {
 
         try {
             const filter = {_id: new ObjectId(id)}
-            const res = await usersCollection.deleteOne(filter)
+            const res = await UserModel.deleteOne(filter).exec()
             return res.deletedCount === 1
         } catch (e) {
             return false
@@ -73,13 +87,13 @@ export const usersRepository = {
     },
     async deleteAllUsers(): Promise<boolean> {
         // dbLocal.blogs = [];
-        await usersCollection.deleteMany({})
+        await UserModel.deleteMany({})
         return true
     },
 
 
     async readUserByCode(code: string): Promise<UserDbModel | null> {
-        const user = await usersCollection.findOne({confirmationCode: code});
+        const user :UserDbModel | null = await UserModel.findOne({confirmationCode: code});
         if (!user) {
             return null;
         }
@@ -87,13 +101,21 @@ export const usersRepository = {
     },
 
     async confirmEmail(id: string): Promise<void> {
-        await usersCollection.updateOne({_id: new ObjectId(id)}, {$set: {isConfirmed: true}});
+        await UserModel.updateOne({_id: new ObjectId(id)}, {$set: {isConfirmed: true}});
         return;
     },
 
 
     async readUserByEmail(email: string): Promise<UserDbModel | null> {
-        const user = await usersCollection.findOne({email: email});
+        const user: UserDbModel | null = await UserModel.findOne({email: email});
+        if (!user) {
+            return null;
+        }
+        return user
+    },
+
+    async readUserByRecoveryCode(email: string): Promise<UserDbModel | null> {
+        const user: UserDbModel | null = await UserModel.findOne({email: email});
         if (!user) {
             return null;
         }
@@ -101,7 +123,7 @@ export const usersRepository = {
     },
 
     async updateConfirmationCode(id: string, newCode: string): Promise<any> {
-        return usersCollection.updateOne({_id: new ObjectId(id)},
+        return UserModel.updateOne({_id: new ObjectId(id)},
             {$set: {confirmationCode: newCode}},);
     },
 

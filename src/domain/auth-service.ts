@@ -1,4 +1,4 @@
-import {UserCreateModel, UserDbModel, UserViewModel} from "../models/users-models/user.models";
+import {UserCreateModel, UserViewModel} from "../models/users-models/user.models";
 import bcrypt from "bcrypt";
 import {ObjectId} from "mongodb";
 import {usersRepository} from "../repositories/users/users-repository-database";
@@ -8,6 +8,10 @@ import {randomUUID} from "crypto";
 import {jwtService} from "../application/jwt-service";
 import {devicesService} from "./devices-service";
 import {devicesRepository} from "../repositories/devices/devices-repository";
+import {add} from "date-fns"
+import e from "express";
+import {DeviceModel} from "./entities/devices-entity";
+import {UserDbModel, UserModel} from "./entities/users-entity";
 
 
 export const authService = {
@@ -22,9 +26,11 @@ export const authService = {
             email: userCreateModel.email, //
             passwordHash: passwordHash,
             passwordSalt: passwordSalt,
-            createdAt: new Date().toISOString(),
+            createdAt: new Date(),
             confirmationCode: randomUUID(), //generate code UUID //
-            isConfirmed: false // by registration
+            isConfirmed: false, // by registration
+            expirationDateOfRecoveryCode: null,
+            passwordRecoveryCode: null
         }
         await usersRepository.createUser(newUser);
         try {
@@ -36,7 +42,7 @@ export const authService = {
             id: newUser._id.toString(),
             login: newUser.login,
             email: newUser.email,
-            createdAt: newUser.createdAt
+            createdAt: newUser.createdAt.toISOString()
         }
     },
 //подтверждение email
@@ -54,7 +60,7 @@ export const authService = {
         const newCode = randomUUID()
         await usersRepository.updateConfirmationCode(user._id.toString(), newCode);
         try {
-             emailService.sendEmail(user.email, newCode, 'It is your code');
+            emailService.sendEmail(user.email, newCode, 'It is your code');
         } catch (e) {
             console.log("code resending email error", e);
         }
@@ -63,11 +69,48 @@ export const authService = {
 
     },
 
+    async passwordRecovery(email: string): Promise<boolean> {
+        const user = await usersRepository.readUserByEmail(email)
+        if (!user) return false;
+
+       user.passwordRecoveryCode =  randomUUID();
+       user.expirationDateOfRecoveryCode = add(new Date(), {
+           hours: 1,
+           minutes: 3
+       });
+
+        await usersRepository.saveUser(user);
+
+        try {
+            emailService.resendEmail(email, user.passwordRecoveryCode)
+        } catch (e) {
+            console.log("code resending email error", e);
+        }
+
+        return true
+
+    },
+
+    async newPasswordSet(newPassword: string, recoveryCode: string) :Promise<boolean>  {
+        const user = await usersRepository.findUserByRecoveryCode(recoveryCode)
+        if(!user) return false
+
+        if(user.expirationDateOfRecoveryCode && user.expirationDateOfRecoveryCode < new Date()) return false
+
+        user.passwordHash = await userService.generateHash(newPassword, user.passwordSalt)
+        user.passwordRecoveryCode = null
+        user.expirationDateOfRecoveryCode = null
+
+        await usersRepository.saveUser(user)
+
+        return true
+
+    },
 
 
-    async login(loginOrEmail: string, password: string, ip: string, title: string): Promise<{accessToken: string, refreshToken: string} | null> {
+    async login(loginOrEmail: string, password: string, ip: string, title: string): Promise<{ accessToken: string, refreshToken: string } | null> {
         const user = await userService.checkCredentials(loginOrEmail, password)
-        if(!user) return null
+        if (!user) return null
         const accessToken = jwtService.createJWT(user);
         const deviceId = randomUUID()
         const refreshToken = jwtService.generateRefreshToken(user, deviceId);
@@ -79,7 +122,7 @@ export const authService = {
         }
     },
 
-    async refresh(user: UserDbModel,  refreshToken: string) : Promise<{accessToken: string, newRefreshToken: string} | null> {
+    async refresh(user: UserDbModel, refreshToken: string): Promise<{ accessToken: string, newRefreshToken: string } | null> {
         const payload = jwtService.getDeviceIdByToken(refreshToken)
         const accessToken = jwtService.createJWT(user);
         const newRefreshToken = jwtService.generateRefreshToken(user, payload.deviceId);
