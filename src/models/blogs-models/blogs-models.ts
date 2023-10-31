@@ -1,24 +1,48 @@
 import {ObjectId, WithId} from "mongodb";
 
-export type BlogsType =
-    {
+export class BlogsType {
+    constructor(
+        public name: string,
+        public description: string,
+        public websiteUrl: string,
+        public createdAt: string,
+        public isMembership: boolean) {
 
-        "name": string,
-        "description": string,
-        "websiteUrl": string,
-        "createdAt": string,
-        "isMembership": boolean
     }
-export type BlogsOutputType =
-    {    "id": string,
-        "name": string,
-        "description": string,
-        "websiteUrl": string,
-        "createdAt": string,
-        "isMembership": boolean
-    }
+}
 
- export type mongoType = WithId<BlogsType>
+// export type BlogsType =
+//     {
+//
+//         "name": string,
+//         "description": string,
+//         "websiteUrl": string,
+//         "createdAt": string,
+//         "isMembership": boolean
+//     }
+// export type BlogsOutputType =
+//     {
+//         "id": string,
+//         "name": string,
+//         "description": string,
+//         "websiteUrl": string,
+//         "createdAt": string,
+//         "isMembership": boolean
+//     }
+
+export class BlogsOutputType {
+    constructor(
+       public id: string,
+       public name: string,
+       public description: string,
+       public websiteUrl: string,
+       public createdAt: string,
+       public isMembership : boolean
+    ) {
+    }
+}
+
+//export type mongoType = WithId<BlogsType>
 
 export type CreateBlogType =
     {
