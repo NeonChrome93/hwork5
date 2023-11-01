@@ -1,19 +1,19 @@
 import {createPostType, PostOutputType, PostType, UpdatePostType} from "../models/posts-models/post-models";
 import {blogRepository} from "../repositories/blogs/blogs-repository-database";
-import {postsRepository} from "../repositories/posts/posts-repository-database";
+import {postRepository} from "../repositories/posts/posts-repository-database";
 import {QueryPaginationType} from "../middlewares/pagination";
 import {PaginationModels} from "../models/pagination/pagination-models";
 
 
-export const postServise = {
+export class PostService  {
 
     async readPosts(pagination: QueryPaginationType): Promise<PaginationModels<PostOutputType[]>> {
-        return postsRepository.readPosts(pagination)
-    },
+        return postRepository.readPosts(pagination)
+    }
 
     async readPostId(postId: string) {
-        return postsRepository.readPostId(postId)
-    },
+        return postRepository.readPostId(postId)
+    }
 
     async createPost(input: createPostType) {
         const blog = await blogRepository.readBlogsId(input.blogId)
@@ -23,25 +23,24 @@ export const postServise = {
             blogName: blog.name,
             createdAt: new Date().toISOString()
         }
-        return postsRepository.createPost(newPost)
-    },
+        return postRepository.createPost(newPost)
+    }
 
     async updatePosts(postId: string, newUpdateRequest: UpdatePostType): Promise<boolean> {
-        let post = await postsRepository.readPostId(postId)
+        let post = await postRepository.readPostId(postId)
         if(!post) return false
-        return  postsRepository.updatePosts(postId,newUpdateRequest)
+        return  postRepository.updatePosts(postId,newUpdateRequest)
 
-    },
+    }
 
     async deletePosts(postId: string) {
 
 
-        let post = await postsRepository.readPostId(postId)
+        let post = await postRepository.readPostId(postId)
         if(!post) return false
-        return  postsRepository.deletePosts(postId)
+        return  postRepository.deletePosts(postId)
     }
 
-
-
-
 }
+
+export const postService = new PostService()

@@ -11,7 +11,7 @@ import {PostModel} from "../../domain/entities/post-entity";
 import {FilterQuery} from "mongoose";
 
 
-export const postsRepository = {
+export class PostRepository {
 
     async readPosts(pagination: QueryPaginationType): Promise<PaginationModels<PostOutputType[]>> {
 
@@ -43,7 +43,7 @@ export const postsRepository = {
         }
 
 
-    },
+    }
 
 
     async readPostId(postId: string) {
@@ -63,7 +63,7 @@ export const postsRepository = {
             createdAt: post.createdAt
 
         }
-    },
+    }
 
     async createPost(newPost: PostType): Promise<PostOutputType> {
 
@@ -73,7 +73,7 @@ export const postsRepository = {
             id: res._id.toString(),
             ...newPost
         }
-    },
+    }
 
     async updatePosts(postId: string, newUpdateRequest: UpdatePostType): Promise<boolean> {
 
@@ -85,7 +85,7 @@ export const postsRepository = {
             }).exec()
             return res.matchedCount === 1;
 
-    },
+    }
 
     async deletePosts(postId: string) {
 
@@ -98,12 +98,12 @@ export const postsRepository = {
             }
 
 
-    },
+    }
 
     async deleteAllPosts() {
         await PostModel.deleteMany({});
         return true
-    },
+    }
 
     async readPostsByBlogId(blogId: string, pagination: QueryPaginationType) {
         const filter: FilterQuery<PostType> = {blogId}
@@ -135,3 +135,5 @@ export const postsRepository = {
         }
     }
 }
+
+export const postRepository = new PostRepository()
