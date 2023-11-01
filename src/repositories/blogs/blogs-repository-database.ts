@@ -1,6 +1,6 @@
 import {
     BlogsOutputType,
-    BlogsType,
+    Blog,
     UpdateBlogType
 } from "../../models/blogs-models/blogs-models";
 import {BlogDbType, BlogModel} from "../../domain/entities/blog-entity"
@@ -12,7 +12,8 @@ import {PaginationModels} from "../../models/pagination/pagination-models";
 
 //todo also update blogName in posts
 // updateBlog(updateBlogDto){
-export const blogRepository = {
+
+class BlogRepository {
 
     async readBlogs(pagination: QueryPaginationType): Promise<PaginationModels<BlogsOutputType[]>> {
 
@@ -43,7 +44,7 @@ export const blogRepository = {
             totalCount: totalCount,
             items
         }
-    },
+    }
 
 
     async readBlogsId(id: string) {
@@ -64,9 +65,9 @@ export const blogRepository = {
             createdAt: blog.createdAt,
             isMembership: blog.isMembership
         }
-    },
+    }
 
-    async createBlog(newBlog: BlogsType): Promise<BlogsOutputType> {
+    async createBlog(newBlog: Blog): Promise<BlogsOutputType> {
         //const newId = randomUUID()
         // const dateNow = new Date()
         // const newBlog: BlogsType = {
@@ -88,7 +89,7 @@ export const blogRepository = {
             ...newBlog
         }
 
-    },
+    }
 
 
     async updateBlogs(id: string, newUpdateRequest: UpdateBlogType): Promise<boolean> {
@@ -105,7 +106,7 @@ export const blogRepository = {
         ).exec()
         return res.matchedCount === 1
 
-    },
+    }
 
 
     async deleteBlogs(id: string): Promise<boolean> {
@@ -118,7 +119,7 @@ export const blogRepository = {
             return false
         }
 
-    },
+    }
 
     async deleteAllBlogs(): Promise<boolean> {
         // dbLocal.blogs = [];
@@ -127,3 +128,5 @@ export const blogRepository = {
     }
 
 }
+
+export const blogRepository = new BlogRepository()
