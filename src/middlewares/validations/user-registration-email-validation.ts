@@ -2,7 +2,7 @@ import {body} from "express-validator";
 import {inputValidationMiddleware} from "./input-validation-middleware";
 import {usersRepository} from "../../repositories/users/users-repository-database";
 import {strict} from "assert";
-import {userService} from "../../domain/users-servise";
+import {userService} from "../../domain/users-service";
 
 export const userRegistrationEmailValidation = [
     body('login').isString().trim().isLength({

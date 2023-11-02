@@ -10,7 +10,7 @@ import {commentRepository} from "../repositories/comments/comments-repository-da
 //    someFunc()
 // }
 
-export const commentServise = {
+export const commentService = {
 
     // async readComment(pagination: QueryPaginationType): Promise<PaginationModels<PostOutputType[]>> {
     //     return commentRepository.readCommentId()

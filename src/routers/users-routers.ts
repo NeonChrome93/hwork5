@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {userService} from "../domain/users-servise";
+import {userService} from "../domain/users-service";
 import {UserCreateModel} from "../models/users-models/user.models";
 import {getQueryUserPagination} from "../middlewares/pagination";
 import {validationCreateUser} from "../middlewares/validations/user-create-validation";
