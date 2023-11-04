@@ -1,6 +1,7 @@
 import {ObjectId} from "mongodb";
 import mongoose from "mongoose";
 import {BlogDbType} from "./blog-entity";
+import {REACTIONS_ENUM} from "../../models/comments-models/comments-models";
 
 
 export type CommentsDBType = {
@@ -12,17 +13,31 @@ export type CommentsDBType = {
         userLogin: string
     }
     createdAt: Date
+    reactions: [
+        {
+            userId: string,
+            createdAt: Date,
+            status: REACTIONS_ENUM
+        }
+    ]
 }
 
 const commentsSchema = new mongoose.Schema<CommentsDBType>({
     postId: {type: String, required: true},
     content: {type: String, required: true},
     commentatorInfo: {
-        userId:  {type: String, required: true},
-        userLogin:  {type: String, required: true},
+        userId: {type: String, required: true},
+        userLogin: {type: String, required: true},
     },
-    createdAt: {type: Date, default: new Date}
+    createdAt: {type: Date, default: new Date},
+    reactions: [
+        {
+            userId: {type: String, required: true},
+            createdAt: {type: Date, default: new Date},
+            status: {type: String, required: true, enum: REACTIONS_ENUM}
+        }
+    ]
 
 })
 
-export const CommentModel = mongoose.model<mongoose.Schema<CommentsDBType>>("comments", commentsSchema )
+export const CommentModel = mongoose.model<mongoose.Schema<CommentsDBType>>("comments", commentsSchema)
