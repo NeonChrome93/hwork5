@@ -48,8 +48,10 @@ describe('Post API', () => {
 
 
     it('Get all blogs 200', async () => {
-        await request(app)
-            .get('/blogs').expect(200, [])
+        const res = await request(app)
+            .get('/blogs').expect(200)
+        expect(res.body.items).toEqual([])
+        expect(res.body.items.length).toBe(0)
     })
 
     it('Get blog ID', async () => {
