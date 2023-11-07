@@ -13,14 +13,20 @@ export type CommentsDBType = {
         userLogin: string
     }
     createdAt: Date
-    reactions: [
-        {
-            userId: string,
-            createdAt: Date,
-            status: REACTIONS_ENUM
-        }
-    ]
+    reactions: StatusType[]
 }
+
+export type StatusType = {
+    userId: string,
+    createdAt: Date,
+    status: REACTIONS_ENUM
+}
+
+const statusSchema = new mongoose.Schema<StatusType>({
+    userId: {type: String, required: true},
+    createdAt: {type: Date, default: new Date},
+    status: {type: String, required: true, enum: REACTIONS_ENUM}
+})
 
 const commentsSchema = new mongoose.Schema<CommentsDBType>({
     postId: {type: String, required: true},
@@ -30,13 +36,7 @@ const commentsSchema = new mongoose.Schema<CommentsDBType>({
         userLogin: {type: String, required: true},
     },
     createdAt: {type: Date, default: new Date},
-    reactions: [
-        {
-            userId: {type: String, required: true},
-            createdAt: {type: Date, default: new Date},
-            status: {type: String, required: true, enum: REACTIONS_ENUM}
-        }
-    ]
+    reactions: { default: [], type: [statusSchema]}
 
 })
 
