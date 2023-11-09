@@ -1,6 +1,12 @@
-import {CommentsDBType, CommentsViewType, UpdateCommentType} from "../models/comments-models/comments-models";
+import {
+
+    CommentsViewType,
+    REACTIONS_ENUM,
+    UpdateCommentType
+} from "../models/comments-models/comments-models";
 import {ObjectId} from "mongodb";
 import {commentRepository} from "../repositories/comments/comments-repository-database";
+import {CommentsDBType, StatusType} from "./entities/comments-entity";
 
 // func(() => {})
 // func(() => {//other logic})
@@ -32,15 +38,35 @@ export const commentService = {
                 userId,
                 userLogin
             },
-            createdAt: new Date()
+            createdAt: new Date(),
+            reactions: []
         }
         await commentRepository.createComment(newComment)
         return {
             id: newComment._id.toString(),
             content,
             commentatorInfo: newComment.commentatorInfo,
-            createdAt: newComment.createdAt.toISOString()
+            createdAt: newComment.createdAt.toISOString(),
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: REACTIONS_ENUM.None
+            }
         }
+    },
+
+    async addReaction(commentId: string, userId: string, status: REACTIONS_ENUM) :Promise<boolean> {
+        const comment = await commentRepository.readCommentIdDbType(commentId)
+        if(!comment) return false
+        const reaction = comment.reactions.find(r => r.userId === userId)
+        if(!reaction) {
+            comment.reactions.push({userId, status, createdAt: new Date()})
+        } else {
+            reaction.status = status
+            reaction.createdAt = new Date()
+        }
+        await commentRepository.updateCommentReactions(comment)
+        return true
     },
 
 
@@ -49,6 +75,9 @@ export const commentService = {
         if(!comment ) return false
         return  commentRepository.updateComment(commentId,newUpdateRequest)
 
+    },
+    async deletedComment(commentId: string){
+        let comment = await commentRepository.readCommentId(commentId)
     },
 
 
