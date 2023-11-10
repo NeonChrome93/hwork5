@@ -7,7 +7,7 @@ import {
 import {Filter, ObjectId} from "mongodb";
 import {QueryPaginationType} from "../../middlewares/pagination";
 import {PaginationModels} from "../../models/pagination/pagination-models";
-import {PostModel} from "../../domain/entities/post-entity";
+import {postDbType, PostModel} from "../../domain/entities/post-entity";
 import {FilterQuery} from "mongoose";
 
 
@@ -115,7 +115,7 @@ export class PostRepository {
             .exec()
 
         const totalCount = await PostModel.countDocuments(filter).exec()
-        const items = posts.map((p) => ({
+        const items  = posts.map((p:postDbType) => ({
             id: p._id.toString(),
             title: p.title,
             shortDescription: p.shortDescription,
