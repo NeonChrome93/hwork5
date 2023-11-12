@@ -2,7 +2,7 @@ import {UserCreateModel, UserViewModel} from "../models/users-models/user.models
 import bcrypt from "bcrypt";
 import {ObjectId} from "mongodb";
 import {usersRepository} from "../repositories/users/users-repository-database";
-import {userService} from "./users-servise";
+import {userService} from "./users-service";
 import {emailService} from "../application/email-servise";
 import {randomUUID} from "crypto";
 import {jwtService} from "../application/jwt-service";
@@ -109,6 +109,7 @@ export const authService = {
 
 
     async login(loginOrEmail: string, password: string, ip: string, title: string): Promise<{ accessToken: string, refreshToken: string } | null> {
+        console.log(title)
         const user = await userService.checkCredentials(loginOrEmail, password)
         if (!user) return null
         const accessToken = jwtService.createJWT(user);

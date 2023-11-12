@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {getQueryUserPagination} from "../middlewares/pagination";
-import {userService} from "../domain/users-servise";
+import {userService} from "../domain/users-service";
 import {devicesRepository} from "../repositories/devices/devices-repository";
 import {jwtService} from "../application/jwt-service";
 import {devicesService} from "../domain/devices-service";
