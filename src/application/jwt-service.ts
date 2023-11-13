@@ -7,7 +7,8 @@ import {UserDbModel} from "../domain/entities/users-entity";
 export const jwtService = {
 
     createJWT(user: UserDbModel) {
-        const token = jwt.sign({userId: user._id}, configKeys.accessTokenPrivateKey, {expiresIn: '10s'})
+        //TODO: 10s
+        const token = jwt.sign({userId: user._id}, configKeys.accessTokenPrivateKey, {expiresIn: '10m'})
         return token
     },
 
