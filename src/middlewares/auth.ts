@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {userService} from "../domain/users-servise";
+import {userService} from "../domain/users-service";
 import {jwtService} from "../application/jwt-service";
 import {devicesService} from "../domain/devices-service";
 
