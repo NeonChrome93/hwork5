@@ -1,9 +1,6 @@
 import {DevicesDBType, DeviceViewModel} from "../../models/devices-models";
 //import {commentsCollection, devicesCollection} from "../../db/database";
 import {DeviceModel} from "../../domain/entities/devices-entity"
-import {Filter, ObjectId} from "mongodb";
-import {CommentsDBType, UpdateCommentType} from "../../models/comments-models/comments-models";
-import {BlogModel} from "../../domain/entities/blog-entity";
 
 export const devicesRepository = {
 

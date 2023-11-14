@@ -42,7 +42,7 @@ export const commentRepository = {
         }
     },
 
-    async readCommentId(id: string): Promise<CommentsViewType | null> {
+    async readCommentId(id: string, userId?: string | null ): Promise<CommentsViewType | null> {
 
         const comment: CommentsDBType | null = await CommentModel.findOne({_id: id})
 
@@ -55,13 +55,16 @@ export const commentRepository = {
             commentatorInfo: comment.commentatorInfo,
             createdAt: comment.createdAt.toISOString(),
             likesInfo: {
-                likesCount: 0,
-                dislikesCount: 0,
-                myStatus: REACTIONS_ENUM.None
+                likesCount: comment.reactions.filter(r => r.status === REACTIONS_ENUM.Like).length,
+                dislikesCount: comment.reactions.filter(r => r.status === REACTIONS_ENUM.Dislike).length,
+                myStatus: userId ?
+                    (comment.reactions.filter(r => r.userId === userId).length ? comment.reactions.filter(r => r.userId === userId)[0].status : REACTIONS_ENUM.None)
+                    : REACTIONS_ENUM.None
+
+
             }
         }
     },
-
     async readCommentIdDbType(id: string): Promise<CommentsDBType | null> {
         if (!ObjectId.isValid(id)) return null
         return CommentModel.findOne({_id: new ObjectId(id)})

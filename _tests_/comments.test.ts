@@ -74,8 +74,8 @@ describe('Likes',() => {
         await runDatabase()
     })
 
-   it('deleteAll', ()=> {
-        request(app).delete('/testing/all-data').expect(204)
+   it('deleteAll', async ()=> {
+        await request(app).delete('/testing/all-data').expect(204)
     })
 
     it('Create Blog',async ()=>{
@@ -118,12 +118,19 @@ describe('Likes',() => {
     });
 
     it('Like comment ', async () => {
-         await request(app).put(`/comments/${commentId}/like-status`).set({authorization:"Bearer " + token1}).send({
+        let likedAndComment = await request(app).put(`/comments/${commentId}/like-status`).set({authorization:"Bearer " + token1}).send({
             likeStatus: "Like"
         }).expect(204)
 
-        const res = await request(app).get('/comments/' + commentId).expect(200)
+        const res = await request(app).get('/comments/' + commentId).set({authorization:"Bearer " + token1}).expect(200)
         console.log(res.body)
+        expect(res.body).toEqual( {
+            id: expect.any(String),
+            content: createComment.content,
+            commentatorInfo: { userId: expect.any(String), userLogin: expect.any(String) },
+            createdAt: expect.any(String),
+            likesInfo: { likesCount: 1, dislikesCount: 0, myStatus: "Like" }
+        })
     });
 
 })

@@ -31,7 +31,7 @@ const headers = {
     "Authorization": "Basic YWRtaW46cXdlcnR5"
 }
 
-describe('Post API', () => {
+describe('Blog API', () => {
     jest.setTimeout(10000)
 
     beforeAll(async () => {

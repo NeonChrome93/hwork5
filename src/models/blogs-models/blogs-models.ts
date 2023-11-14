@@ -1,6 +1,6 @@
 import {ObjectId, WithId} from "mongodb";
 
-export class BlogsType {
+export class Blog {
     constructor(
         public name: string,
         public description: string,
@@ -10,6 +10,9 @@ export class BlogsType {
 
     }
 }
+
+
+const blog = new Blog('Y', 'blablsa','dfgdfgdfgdf', 'adwawad', false)
 
 // export type BlogsType =
 //     {

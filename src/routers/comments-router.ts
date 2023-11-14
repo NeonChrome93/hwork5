@@ -1,18 +1,24 @@
 import {Request, Response, Router} from "express";
 import {commentService} from "../domain/comments-serviсe";
-import {authMiddleware} from "../middlewares/auth";
+import {authMiddleware, authSoftMiddleware} from "../middlewares/auth";
 import {contentValidation} from "../middlewares/validations/content-validation";
 import {commentRepository} from "../repositories/comments/comments-repository-database";
 import {isCommentOwnerMiddleware} from "../middlewares/comment-info";
 import {CommentModel} from "../domain/entities/comments-entity";
 import {ObjectId} from "mongodb";
+import {commentLikesValidation} from "../middlewares/validations/comment-likes-validation";
+import {UserDbModel} from "../domain/entities/users-entity";
+
 
 export const commentsRouter = Router({})
 
 
-commentsRouter.get('/:id', async (req: Request, res: Response) => {
+commentsRouter.get('/:id', authSoftMiddleware,  async (req: Request, res: Response) => {
+    const userId : string | null = req.userId
+
     const commentId = req.params.id
-    let foundId = await commentService.readCommentId(commentId)
+    // tut drugoy metod
+    let foundId = await commentService.readLikedCommentByIdAndUserId(commentId, userId ? userId : null)
     if (foundId) {
         res.status(200).send(foundId)
     } else res.sendStatus(404)
@@ -29,10 +35,11 @@ commentsRouter.put('/:id', authMiddleware, isCommentOwnerMiddleware, ...contentV
 
 })
 
-commentsRouter.put('/:commentId/like-status', authMiddleware, async (req: Request, res: Response) => {
+commentsRouter.put('/:commentId/like-status', authMiddleware, ...commentLikesValidation, async (req: Request, res: Response) => {
     const user = req.user!
     const comment = req.params.commentId
     const status = req.body.likeStatus
+    console.log(status, "likestatus")
     console.log(await CommentModel.findOne({_id: new ObjectId(comment)}))
 
     let addLikes = await commentService.addReaction(comment, user._id.toString(), status)

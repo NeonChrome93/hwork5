@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import {BlogsType} from "../../models/blogs-models/blogs-models";
+import {Blog} from "../../models/blogs-models/blogs-models";
 import {ObjectId} from "mongodb";
 
 export type BlogDbType = {
@@ -10,6 +10,8 @@ export type BlogDbType = {
     createdAt: Date,
     isMembership: boolean
 }
+
+
 
 
 

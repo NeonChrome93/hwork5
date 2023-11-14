@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {validationCreateUpdatePost} from "../middlewares/validations/post-validation";
-import {authGuardMiddleware, authMiddleware} from "../middlewares/auth";
+import {authGuardMiddleware, authMiddleware, authSoftMiddleware} from "../middlewares/auth";
 import {getQueryPagination} from "../middlewares/pagination";
 import {postService} from "../domain/post-service";
 import {commentService} from "../domain/comments-serviсe";
@@ -51,13 +51,14 @@ class PostController {
     }
 
     async getCommentByPostId(req: Request, res: Response) {
+        const userId = req.userId
         const postId = req.params.postId;
         const pagination = getQueryPagination(req.query);
         const post = await postService.readPostId(postId);
         if (!post) {
             return res.sendStatus(404);
         }
-        const comment = await commentRepository.readCommentByPostId(postId, pagination);
+        const comment = await commentRepository.readCommentByPostId(postId, pagination, userId ? userId : null);
         if (!comment) return res.sendStatus(404);
         return res.status(200).send(comment);
     }
@@ -91,7 +92,7 @@ postsRouter.put('/:id',
 postsRouter.delete('/:id',
     authGuardMiddleware,postControllerInstance.deletePost)
 
-postsRouter.get('/:postId/comments', postControllerInstance.getCommentByPostId)
+postsRouter.get('/:postId/comments',authSoftMiddleware, postControllerInstance.getCommentByPostId)
 
 postsRouter.post('/:postId/comments',
     authMiddleware,

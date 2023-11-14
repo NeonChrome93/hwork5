@@ -21,7 +21,9 @@ export const commentService = {
     // async readComment(pagination: QueryPaginationType): Promise<PaginationModels<PostOutputType[]>> {
     //     return commentRepository.readCommentId()
     // },
-
+    async readLikedCommentByIdAndUserId(commentId: string,  userId?: string | null) {
+        return commentRepository.readCommentId(commentId, userId)
+    },
     async readCommentId(commentId: string) {
         return commentRepository.readCommentId(commentId)
     },
@@ -56,7 +58,7 @@ export const commentService = {
     },
 
     async addReaction(commentId: string, userId: string, status: REACTIONS_ENUM) :Promise<boolean> {
-        const comment = await commentRepository.readCommentIdDbType(commentId)
+        let comment = await commentRepository.readCommentIdDbType(commentId)
         if(!comment) return false
         const reaction = comment.reactions.find(r => r.userId === userId)
         if(!reaction) {
@@ -64,6 +66,8 @@ export const commentService = {
         } else {
             reaction.status = status
             reaction.createdAt = new Date()
+           //const newArray=  comment.reactions.map((r) => r.userId === reaction.userId ? {...r, ...reaction} : r)
+            comment.reactions = comment.reactions.map((r) => r.userId === reaction.userId ? {...r, ...reaction} : r)
         }
         await commentRepository.updateCommentReactions(comment)
         return true

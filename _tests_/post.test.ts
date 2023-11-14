@@ -1,5 +1,6 @@
 import request from "supertest";
 import {app} from "../src/app";
+import {runDatabase} from "../src/db/database";
 
 const createBlog = {
     name: "Yaroslaw",
@@ -27,6 +28,11 @@ const headers = {
 }
 
 describe('Post API', () => {
+    jest.setTimeout(10000)
+
+    beforeAll(async () => {
+        await runDatabase()
+    })
 
     it('before all', async () => {
         await request(app).delete('/testing/all-data').expect(204)

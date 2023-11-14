@@ -10,7 +10,8 @@ export type postDbType = {
     content: string,
     blogId: string,
     blogName: string,
-    createdAt: Date
+    createdAt: Date,
+
 }
 
 
@@ -21,8 +22,7 @@ const postSchema = new mongoose.Schema<postDbType>({
     content: {type: String, required: true},
     blogId: {type: String, require: true},
     blogName: {type: String, require: true},
-    createdAt: {type: Date, default: new Date}
-
+    createdAt: {type: Date, default: new Date},
 
 })
 //..

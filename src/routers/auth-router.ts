@@ -1,5 +1,5 @@
 import e, {Request, Response, Router} from "express";
-import {userService} from "../domain/users-servise";
+import {userService} from "../domain/users-service";
 import {validationLoginAuth} from "../middlewares/validations/auth-logiin-validation";
 import {jwtService} from "../application/jwt-service";
 import {authMiddleware, checkRefreshToken} from "../middlewares/auth";
@@ -24,7 +24,7 @@ export const authRouter = Router({})
 authRouter.post('/login', countApiRequests, ...validationLoginAuth,
     async (req: Request, res: Response) => {
         const {loginOrEmail, password} = req.body
-        const result = await authService.login(loginOrEmail, password, req.ip, req.headers['user-agent'] || '') // alt+ enter
+        const result = await authService.login(loginOrEmail, password, req.ip, req.headers['user-agent'] || 'x') // alt+ enter
         if (!result) return res.sendStatus(401)
         return res
             .cookie('refreshToken', result.refreshToken, {httpOnly: true, secure: true})

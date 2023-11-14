@@ -16,7 +16,9 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
     if (!errors.isEmpty()) {
         const errorsMessages = errors.array({onlyFirstError: true}).map(e => errFormat(e))
         return res.status(400).json({errorsMessages});
-    } else return next()
+    } else {
+        next()
+    }
 
 
 }

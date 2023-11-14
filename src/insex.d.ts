@@ -6,6 +6,7 @@ declare global {
     namespace Express {
         export interface Request {
             user:  UserDbModel | null
+            userId:  string | null
             deviceId: string | null
         }
     }

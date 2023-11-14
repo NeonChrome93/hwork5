@@ -19,6 +19,8 @@ class BlogRepository {
 
         const filter: FilterQuery<BlogDbType> = {name: {$regex: pagination.searchNameTerm, $options: 'i'}}
 
+
+
         const blogs = await BlogModel
             .find(filter, null, {lean: true})
             .sort({[pagination.sortBy]: pagination.sortDirection})
