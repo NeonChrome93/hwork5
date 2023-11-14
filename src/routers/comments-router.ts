@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {commentService} from "../domain/comments-serviсe";
-import {authMiddleware, authSoftMiddleware} from "../middlewares/auth";
+import {authMiddleware, getUserMiddleware} from "../middlewares/auth";
 import {contentValidation} from "../middlewares/validations/content-validation";
 import {commentRepository} from "../repositories/comments/comments-repository-database";
 import {isCommentOwnerMiddleware} from "../middlewares/comment-info";
@@ -13,12 +13,12 @@ import {UserDbModel} from "../domain/entities/users-entity";
 export const commentsRouter = Router({})
 
 
-commentsRouter.get('/:id', authSoftMiddleware,  async (req: Request, res: Response) => {
+commentsRouter.get('/:id', getUserMiddleware,  async (req: Request, res: Response) => {
     const userId : string | null = req.userId
 
     const commentId = req.params.id
     // tut drugoy metod
-    let foundId = await commentService.readLikedCommentByIdAndUserId(commentId, userId ? userId : null)
+    let foundId = await commentService.readLikedCommentByIdAndUserId(commentId, userId)
     if (foundId) {
         res.status(200).send(foundId)
     } else res.sendStatus(404)

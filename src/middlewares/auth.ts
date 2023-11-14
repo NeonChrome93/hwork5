@@ -33,15 +33,16 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
             next();
         } else res.sendStatus(401)
     }
-export const authSoftMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const getUserMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     if (!req.headers.authorization) {
-        return
+      req.userId = null
+        return next()
     }
 
     const token = req.headers.authorization.split(' ')[1];
     //console.log(token)
     req.userId = jwtService.getUserIdByToken(token)
-    next()
+   return next()
 
 }
 
