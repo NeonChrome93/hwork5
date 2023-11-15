@@ -44,7 +44,7 @@ export const commentRepository = {
 
     async readCommentId(id: string, userId?: string | null ): Promise<CommentsViewType | null> {
 
-        const comment: CommentsDBType | null = await CommentModel.findOne({_id: id})
+        const comment: CommentsDBType | null = await CommentModel.findOne({_id: new ObjectId(id)})
 
         if (!comment) {
             return null
