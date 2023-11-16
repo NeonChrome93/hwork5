@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {validationCreateUpdatePost} from "../middlewares/validations/post-validation";
-import {authGuardMiddleware, authMiddleware, authSoftMiddleware} from "../middlewares/auth";
+import {authGuardMiddleware, authMiddleware, getUserMiddleware} from "../middlewares/auth";
 import {getQueryPagination} from "../middlewares/pagination";
 import {postService} from "../domain/post-service";
 import {commentService} from "../domain/comments-serviсe";
@@ -31,6 +31,16 @@ class PostController {
         const newPosts = await postService.createPost(req.body);
         if (!newPosts) return res.sendStatus(400);
         res.status(201).send(newPosts);
+    }
+
+    async updateLikeStatus(req:Request,res: Response) {
+        const user = req.user!
+        const post = req.params.postId
+        const status = req.body.likeStatus
+        let addLikes = postService.addLikesByPost(post, user._id.toString(), status)
+        if(!addLikes) {
+            res.sendStatus(404)
+        } else res.sendStatus(204)
     }
 
     async updatePost(req: Request, res: Response) {
@@ -85,6 +95,8 @@ postsRouter.post('/',
     authGuardMiddleware,
     ...validationCreateUpdatePost, postControllerInstance.createPosts)
 
+postsRouter.put('/:postId/like-status', postControllerInstance.updateLikeStatus)
+
 postsRouter.put('/:id',
     authGuardMiddleware,
     ...validationCreateUpdatePost,postControllerInstance.updatePost)
@@ -92,7 +104,7 @@ postsRouter.put('/:id',
 postsRouter.delete('/:id',
     authGuardMiddleware,postControllerInstance.deletePost)
 
-postsRouter.get('/:postId/comments',authSoftMiddleware, postControllerInstance.getCommentByPostId)
+postsRouter.get('/:postId/comments',getUserMiddleware, postControllerInstance.getCommentByPostId)
 
 postsRouter.post('/:postId/comments',
     authMiddleware,
