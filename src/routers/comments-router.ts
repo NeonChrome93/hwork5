@@ -8,6 +8,7 @@ import {CommentModel} from "../domain/entities/comments-entity";
 import {ObjectId} from "mongodb";
 import {commentLikesValidation} from "../middlewares/validations/comment-likes-validation";
 import {UserDbModel} from "../domain/entities/users-entity";
+import {commentsQueryRepository} from "../repositories/comments/comments-query-repository";
 
 
 export const commentsRouter = Router({})
@@ -17,8 +18,7 @@ commentsRouter.get('/:id', getUserMiddleware,  async (req: Request, res: Respons
     const userId : string | null = req.userId
 
     const commentId = req.params.id
-    // tut drugoy metod
-    let foundId = await commentService.readLikedCommentByIdAndUserId(commentId, userId)
+    let foundId = await commentsQueryRepository.readCommentId(commentId, userId)
     if (foundId) {
         res.status(200).send(foundId)
     } else res.sendStatus(404)
@@ -39,12 +39,12 @@ commentsRouter.put('/:commentId/like-status', authMiddleware, ...commentLikesVal
     const user = req.user!
     const comment = req.params.commentId
     const status = req.body.likeStatus
-    console.log(status, "likestatus")
-    console.log(await CommentModel.findOne({_id: new ObjectId(comment)}))
+    // console.log(status, "likestatus")
+    // console.log(await CommentModel.findOne({_id: new ObjectId(comment)}))
 
     let addLikes = await commentService.addReaction(comment, user._id.toString(), status)
 
-    console.log(await CommentModel.findOne({_id: new ObjectId(comment)}))
+    // console.log(await CommentModel.findOne({_id: new ObjectId(comment)}))
     if (addLikes) {
         res.sendStatus(204)
     } else res.sendStatus(404)

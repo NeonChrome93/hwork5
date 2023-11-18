@@ -2,6 +2,7 @@ import {ObjectId} from "mongodb";
 import mongoose from "mongoose";
 import {PostType} from "../../models/posts-models/post-models";
 import {BlogDbType} from "./blog-entity";
+import {StatusType} from "./comments-entity";
 
 export type postDbType = {
     _id: ObjectId,
@@ -11,8 +12,10 @@ export type postDbType = {
     blogId: string,
     blogName: string,
     createdAt: Date,
+    reactions: StatusType[]
 
 }
+
 
 
 

@@ -18,10 +18,7 @@ import {QueryPaginationType} from "../middlewares/pagination";
 // updateBlog(updateBlogDto){
 export class BlogService {
 
-    async readBlogs(pagination: QueryPaginationType): Promise<PaginationModels<BlogsOutputType[]>> {
-        // return blogRepository(this.readBlogs(p))
-        return blogRepository.readBlogs(pagination)
-    }
+
 
     async createBlog(newBlogFromRequest: CreateBlogType): Promise<BlogsOutputType> {
         const dateNow = new Date()
@@ -37,13 +34,7 @@ export class BlogService {
     }
 
 
-    async readBlogsId(id: string) {
-        return blogRepository.readBlogsId(id)
-
-    }
-
-
-    async updateBlogs(id: string, newUpdateRequest: UpdateBlogType): Promise<boolean> {
+        async updateBlogs(id: string, newUpdateRequest: UpdateBlogType): Promise<boolean> {
         const blog = await blogRepository.readBlogsId(id)
         if (!blog) return false
         return blogRepository.updateBlogs(id, newUpdateRequest)

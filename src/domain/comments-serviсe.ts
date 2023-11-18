@@ -7,6 +7,7 @@ import {
 import {ObjectId} from "mongodb";
 import {commentRepository} from "../repositories/comments/comments-repository-database";
 import {CommentsDBType, StatusType} from "./entities/comments-entity";
+import {commentsQueryRepository} from "../repositories/comments/comments-query-repository";
 
 // func(() => {})
 // func(() => {//other logic})
@@ -21,12 +22,12 @@ export const commentService = {
     // async readComment(pagination: QueryPaginationType): Promise<PaginationModels<PostOutputType[]>> {
     //     return commentRepository.readCommentId()
     // },
-    async readLikedCommentByIdAndUserId(commentId: string,  userId?: string | null) {
-        return commentRepository.readCommentId(commentId, userId)
-    },
-    async readCommentId(commentId: string) {
-        return commentRepository.readCommentId(commentId)
-    },
+    // async readLikedCommentByIdAndUserId(commentId: string,  userId?: string | null) {
+    //     return commentRepository.readCommentId(commentId, userId)
+    // },
+    // async readCommentId(commentId: string) {
+    //     return commentRepository.readCommentId(commentId)
+    // },
 
 
 
@@ -75,18 +76,18 @@ export const commentService = {
 
 
     async updateComment(commentId: string, newUpdateRequest: UpdateCommentType): Promise<boolean> {
-        let comment = await commentRepository.readCommentId(commentId)
+        let comment = await commentsQueryRepository.readCommentId(commentId)
         if(!comment ) return false
         return  commentRepository.updateComment(commentId,newUpdateRequest)
 
     },
     async deletedComment(commentId: string){
-        let comment = await commentRepository.readCommentId(commentId)
+        let comment = await commentsQueryRepository.readCommentId(commentId)
     },
 
 
     async deleteComment(commentId: string): Promise<boolean> {
-        let comment = await commentRepository.readCommentId(commentId)
+        let comment = await commentsQueryRepository.readCommentId(commentId)
         if(!comment) return false
         return  commentRepository.deleteComment(commentId)
     },

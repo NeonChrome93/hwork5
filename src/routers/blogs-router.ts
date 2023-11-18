@@ -7,6 +7,8 @@ import {getQueryPagination} from "../middlewares/pagination";
 import {postRepository} from "../repositories/posts/posts-repository-database";
 import {validationCreatePostWithoutBlogId} from "../middlewares/validations/post-withoutBlogId-validation";
 import {postService} from "../domain/post-service";
+import {blogQueryRepository} from "../repositories/blogs/blog-query-repository";
+import {blogRepository} from "../repositories/blogs/blogs-repository-database";
 
 
 export const blogsRouter = Router({})
@@ -15,13 +17,13 @@ class BlogController {
 
     async getBlogs(req: Request, res: Response) {
         const pagination = getQueryPagination(req.query)
-        const arr = await blogService.readBlogs(pagination);
+        const arr = await blogQueryRepository.readBlogs(pagination);
         res.status(200).send(arr);
     }
 
     async getBlogById(req: Request, res: Response) {
         const blogId = req.params.id
-        let foundId = await blogService.readBlogsId(blogId);
+        let foundId = await blogQueryRepository.readBlogsId(blogId);
         if (foundId) {
             res.status(200).send(foundId)
         } else res.sendStatus(404)
@@ -52,7 +54,7 @@ class BlogController {
     async getPostByBlogId(req: Request, res: Response) {
         const blogId = req.params.id
         const pagination = getQueryPagination(req.query)
-        const blog = await blogService.readBlogsId(blogId)
+        const blog = await blogRepository.readBlogsId(blogId)
         if (!blog) return res.sendStatus(404)
         const arr = await postRepository.readPostsByBlogId(blogId, pagination); //servis
         return res.status(200).send(arr)

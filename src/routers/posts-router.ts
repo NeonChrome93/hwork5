@@ -6,6 +6,9 @@ import {postService} from "../domain/post-service";
 import {commentService} from "../domain/comments-serviсe";
 import {commentRepository} from "../repositories/comments/comments-repository-database";
 import {contentValidation} from "../middlewares/validations/content-validation";
+import {postsQueryRepository} from "../repositories/posts/posts-query-repository";
+import {postRepository} from "../repositories/posts/posts-repository-database";
+import {commentsQueryRepository} from "../repositories/comments/comments-query-repository";
 
 
 export const postsRouter = Router({})
@@ -14,14 +17,14 @@ class PostController {
 
     async getPosts(req: Request, res: Response) {
         const pagination = getQueryPagination(req.query);
-        const arr = await postService.readPosts(pagination);
+        const arr = await postsQueryRepository.readPosts(pagination);
         res.status(200).send(arr);
     }
 
     async getPostById(req: Request, res: Response) {
         const postId = req.params.id;
         console.log(postId);
-        let foundId = await postService.readPostId(postId);
+        let foundId = await postsQueryRepository.readPostId(postId);
         if (foundId) {
             res.send(foundId);
         } else res.sendStatus(404);
@@ -37,10 +40,10 @@ class PostController {
         const user = req.user!
         const post = req.params.postId
         const status = req.body.likeStatus
-        let addLikes = postService.addLikesByPost(post, user._id.toString(), status)
-        if(!addLikes) {
-            res.sendStatus(404)
-        } else res.sendStatus(204)
+        // let addLikes = postService.addLikesByPost(post, user._id.toString(), status)
+        // if(!addLikes) {
+        //     res.sendStatus(404)
+        // } else res.sendStatus(204)
     }
 
     async updatePost(req: Request, res: Response) {
@@ -64,17 +67,17 @@ class PostController {
         const userId = req.userId
         const postId = req.params.postId;
         const pagination = getQueryPagination(req.query);
-        const post = await postService.readPostId(postId);
+        const post = await postRepository.readPostId(postId);
         if (!post) {
             return res.sendStatus(404);
         }
-        const comment = await commentRepository.readCommentByPostId(postId, pagination, userId ? userId : null);
+        const comment = await commentsQueryRepository.readCommentByPostId(postId, pagination, userId ? userId : null);
         if (!comment) return res.sendStatus(404);
         return res.status(200).send(comment);
     }
 
     async createCommentByPostId(req: Request, res: Response) {
-        const post = await postService.readPostId(req.params.postId);
+        const post = await postRepository.readPostId(req.params.postId);
         if (!post) return res.sendStatus(404);
 
         const userId = req.user!._id.toString();

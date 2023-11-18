@@ -7,13 +7,13 @@ import {PaginationModels} from "../models/pagination/pagination-models";
 
 export class PostService  {
 
-    async readPosts(pagination: QueryPaginationType): Promise<PaginationModels<PostOutputType[]>> {
-        return postRepository.readPosts(pagination)
-    }
-
-    async readPostId(postId: string) {
-        return postRepository.readPostId(postId)
-    }
+    // async readPosts(pagination: QueryPaginationType): Promise<PaginationModels<PostOutputType[]>> {
+    //     return postRepository.readPosts(pagination)
+    // }
+    //
+    // async readPostId(postId: string) {
+    //     return postRepository.readPostId(postId)
+    // }
 
     async createPost(input: createPostType) {
         const blog = await blogRepository.readBlogsId(input.blogId)

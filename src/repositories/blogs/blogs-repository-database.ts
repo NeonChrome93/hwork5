@@ -15,58 +15,43 @@ import {PaginationModels} from "../../models/pagination/pagination-models";
 
 class BlogRepository {
 
-    async readBlogs(pagination: QueryPaginationType): Promise<PaginationModels<BlogsOutputType[]>> {
-
-        const filter: FilterQuery<BlogDbType> = {name: {$regex: pagination.searchNameTerm, $options: 'i'}}
-
-
-
-        const blogs = await BlogModel
-            .find(filter, null, {lean: true})
-            .sort({[pagination.sortBy]: pagination.sortDirection})
-            .skip(pagination.skip)
-            .limit(pagination.pageSize)
-            .exec()
-
-        const totalCount = await BlogModel.countDocuments(filter).exec()
-        const items: BlogsOutputType[] = blogs.map((b) => ({
-            id: b._id.toString(),
-            name: b.name,
-            description: b.description,
-            websiteUrl: b.websiteUrl,
-            createdAt: b.createdAt.toISOString(),
-            isMembership: b.isMembership
-
-        }))
-        const pagesCount = Math.ceil(totalCount / pagination.pageSize);
-        return {
-            pagesCount: pagesCount === 0 ? 1 : pagesCount,
-            page: pagination.pageNumber,
-            pageSize: pagination.pageSize,
-            totalCount: totalCount,
-            items
-        }
-    }
+    // async readBlogs(pagination: QueryPaginationType): Promise<PaginationModels<BlogsOutputType[]>> {
+    //
+    //     const filter: FilterQuery<BlogDbType> = {name: {$regex: pagination.searchNameTerm, $options: 'i'}}
+    //
+    //
+    //
+    //     const blogs = await BlogModel
+    //         .find(filter, null, {lean: true})
+    //         .sort({[pagination.sortBy]: pagination.sortDirection})
+    //         .skip(pagination.skip)
+    //         .limit(pagination.pageSize)
+    //         .exec()
+    //
+    //     const totalCount = await BlogModel.countDocuments(filter).exec()
+    //     const items: BlogsOutputType[] = blogs.map((b) => ({
+    //         id: b._id.toString(),
+    //         name: b.name,
+    //         description: b.description,
+    //         websiteUrl: b.websiteUrl,
+    //         createdAt: b.createdAt.toISOString(),
+    //         isMembership: b.isMembership
+    //
+    //     }))
+    //     const pagesCount = Math.ceil(totalCount / pagination.pageSize);
+    //     return {
+    //         pagesCount: pagesCount === 0 ? 1 : pagesCount,
+    //         page: pagination.pageNumber,
+    //         pageSize: pagination.pageSize,
+    //         totalCount: totalCount,
+    //         items
+    //     }
+    // }
 
 
     async readBlogsId(id: string) {
-        // let findId = dbLocal.blogs.find(b => b.id === id)
-        // return findId
-        // return (await client.db('test').collections<blogsType>('blogs')).find(b => b.id === id).toArray()
-        const blog = await BlogModel.findOne({_id: new ObjectId(id)}).exec()//logic
+       return await BlogModel.findOne({_id: new ObjectId(id)}).exec()//only for logic for services
 
-        if (!blog) {
-            return null;
-        }
-
-        return {
-            id: blog._id.toString(),
-            name: blog.name,
-            description: blog.description,
-            websiteUrl: blog.websiteUrl,
-            createdAt: blog.createdAt,
-            isMembership: blog.isMembership
-        }
     }
 
     async createBlog(newBlog: Blog): Promise<BlogsOutputType> {

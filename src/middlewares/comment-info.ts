@@ -5,6 +5,7 @@ import {ObjectId} from "mongodb";
 import {jwtService} from "../application/jwt-service";
 import {userService} from "../domain/users-service";
 import {commentService} from "../domain/comments-serviсe";
+import {commentsQueryRepository} from "../repositories/comments/comments-query-repository";
 
 export const  isCommentOwnerMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     if(!req.headers.authorization){
@@ -14,7 +15,7 @@ export const  isCommentOwnerMiddleware = async (req: Request, res: Response, nex
 
     const token = req.headers.authorization.split(' ')[1];
     const userId = await jwtService.getUserIdByToken(token)
-    const commentBeforeDelete = await commentService.readCommentId(req.params.id)
+    const commentBeforeDelete = await commentsQueryRepository.readCommentId(req.params.id)
 
     if(!commentBeforeDelete) {return res.sendStatus(404) }
     if(!userId) {return res.sendStatus(404) }
