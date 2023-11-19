@@ -15,9 +15,9 @@ export const devicesRepository = {
         return DeviceModel.findOne({deviceId})
     },
 
-    async findAllUserDevices(userId: string) :Promise<DeviceViewModel[]>{
-        return  DeviceModel.find({userId}, {projection: {_id: 0, userId: 0}}).lean()
-    },
+    // async findAllUserDevices(userId: string) :Promise<DeviceViewModel[]>{
+    //     return  DeviceModel.find({userId}, {projection: {_id: 0, userId: 0}}).lean()
+    // },
 
     async updateDeviceLastActiveDate(deviceId: string ,lastActiveDate: string): Promise<boolean> {
 

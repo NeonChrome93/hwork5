@@ -5,6 +5,7 @@ import {devicesRepository} from "../repositories/devices/devices-repository";
 import {jwtService} from "../application/jwt-service";
 import {devicesService} from "../domain/devices-service";
 import {checkRefreshToken} from "../middlewares/auth";
+import {devicesQueryRepository} from "../repositories/devices/devices-query-repository";
 
 
 export const securityDevisesRouter = Router({})
@@ -14,7 +15,7 @@ securityDevisesRouter.get('/devices', checkRefreshToken, async (req: Request, re
     const refreshToken = req.cookies.refreshToken
     if (!refreshToken) res.sendStatus(401)
     const userId = jwtService.getUserIdByToken(refreshToken)
-    const devises = await devicesRepository.findAllUserDevices(userId)
+    const devises = await devicesQueryRepository.findAllUserDevices(userId)
     res.status(200).send(devises);
 //-> queryRepo-> deviceCollection.find(userId)
     //сделать миддлвару проверить токен прервать там на 401 статус если нет токена и нет userid checkRefreshToken
