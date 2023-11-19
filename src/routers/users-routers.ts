@@ -4,6 +4,7 @@ import {UserCreateModel} from "../models/users-models/user.models";
 import {getQueryUserPagination} from "../middlewares/pagination";
 import {validationCreateUser} from "../middlewares/validations/user-create-validation";
 import {authGuardMiddleware} from "../middlewares/auth";
+import {usersQueryRepository} from "../repositories/users/users-query-repository";
 
 
 export const usersRouters = Router({})
@@ -12,7 +13,7 @@ usersRouters.get('/',
     authGuardMiddleware,
     async (req: Request, res: Response) => {
         const pagination = getQueryUserPagination(req.query)
-        const arr = await userService.getUsers(pagination);
+        const arr = await usersQueryRepository.getUsers(pagination);
         res.status(200).send(arr);
 
 

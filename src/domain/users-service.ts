@@ -21,9 +21,9 @@ const hashService = {
 
 export const userService = {
 
-    async getUsers(pagination:  QueryUserPaginationType) :Promise<PaginationModels<UserViewModel[]>> {
-        return usersRepository.getUsers(pagination)
-    },
+    // async getUsers(pagination:  QueryUserPaginationType) :Promise<PaginationModels<UserViewModel[]>> {
+    //     return usersRepository.getUsers(pagination)
+    // },
 
     async createUser(userCreateModel: UserCreateModel): Promise<UserViewModel> {
         const passwordSalt = await bcrypt.genSalt(10)
