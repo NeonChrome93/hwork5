@@ -2,7 +2,9 @@ import {ObjectId} from "mongodb";
 import mongoose from "mongoose";
 import {PostType} from "../../models/posts-models/post-models";
 import {BlogDbType} from "./blog-entity";
-import {StatusType} from "./comments-entity";
+
+import {REACTIONS_ENUM} from "../../models/comments-models/comments-models";
+import e from "express";
 
 export type postDbType = {
     _id: ObjectId,
@@ -16,7 +18,19 @@ export type postDbType = {
 
 }
 
+ export type StatusType = {
+    userId: string,
+     login:string,
+    createdAt: Date,
+    status: REACTIONS_ENUM
+}
 
+const statusSchema = new mongoose.Schema<StatusType>({
+    userId: {type: String, required: true},
+    login: {type: String, required: true},
+    createdAt: {type: Date, default: new Date},
+    status: {type: String, required: true, enum: REACTIONS_ENUM}
+})
 
 
 const postSchema = new mongoose.Schema<postDbType>({
@@ -26,6 +40,7 @@ const postSchema = new mongoose.Schema<postDbType>({
     blogId: {type: String, require: true},
     blogName: {type: String, require: true},
     createdAt: {type: Date, default: new Date},
+    reactions: {default: [], type: [statusSchema]}
 
 })
 //..
