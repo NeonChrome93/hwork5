@@ -20,7 +20,6 @@ class PostsQueryRepository {
 
         const items: PostViewType[] = posts.map((p: postDbType) => {
 
-
             const result = {
                 id: p._id.toString(),
                 title: p.title,
@@ -37,7 +36,6 @@ class PostsQueryRepository {
                         : REACTIONS_ENUM.None,
                     newestLikes: [] as NewestLikeType[]
                 }
-
             }
 
             if(result.extendedLikesInfo.likesCount){
@@ -47,8 +45,7 @@ class PostsQueryRepository {
                             addedAt: r.createdAt.toISOString(),
                             userId: r.userId,
                             login: r.login
-
-                        } );
+                        });
                     }
                     return acc
                 }, [] as NewestLikeType[]).sort((a, b) => new Date(b.addedAt).getTime()  - new Date(a.addedAt).getTime())
@@ -58,10 +55,8 @@ class PostsQueryRepository {
                     result.extendedLikesInfo.newestLikes.push(...newestLikes)
                 }
             }
-
             return result;
-            }
-        )
+            })
         const pagesCount = Math.ceil(totalCount / pagination.pageSize);
         return {
             pagesCount: pagesCount === 0 ? 1 : pagesCount,

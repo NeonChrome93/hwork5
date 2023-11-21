@@ -29,7 +29,7 @@ export type PostViewType = {
     "extendedLikesInfo": {
         likesCount: number,
         dislikesCount: number,
-        myStatus: REACTIONS_ENUM
+        myStatus: REACTIONS_ENUM,
         newestLikes:  NewestLikeType[]
     }
 }

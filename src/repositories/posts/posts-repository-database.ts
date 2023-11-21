@@ -119,35 +119,7 @@ export class PostRepository {
         return true
     }
 
-    async readPostsByBlogId(blogId: string, pagination: QueryPaginationType) {
-        const filter: FilterQuery<PostType> = {blogId}
-        const posts = await PostModel
-            .find(filter)
-            .sort({[pagination.sortBy]: pagination.sortDirection})
-            .skip(pagination.skip)
-            .limit(pagination.pageSize)
-            .exec()
 
-        const totalCount = await PostModel.countDocuments(filter).exec()
-        const items = posts.map((p: postDbType) => ({
-            id: p._id.toString(),
-            title: p.title,
-            shortDescription: p.shortDescription,
-            content: p.content,
-            blogId: p.blogId,
-            blogName: p.blogName,
-            createdAt: p.createdAt
-
-        }))
-        const pagesCount = Math.ceil(totalCount / pagination.pageSize);
-        return {
-            pagesCount: pagesCount === 0 ? 1 : pagesCount,
-            page: pagination.pageNumber,
-            pageSize: pagination.pageSize,
-            totalCount,
-            items
-        }
-    }
 }
 
 export const postRepository = new PostRepository()

@@ -6,7 +6,7 @@ import {commentRepository} from "../repositories/comments/comments-repository-da
 import {isCommentOwnerMiddleware} from "../middlewares/comment-info";
 import {CommentModel} from "../domain/entities/comments-entity";
 import {ObjectId} from "mongodb";
-import {commentLikesValidation} from "../middlewares/validations/comment-likes-validation";
+import {likesValidation} from "../middlewares/validations/likes-validation";
 import {UserDbModel} from "../domain/entities/users-entity";
 import {commentsQueryRepository} from "../repositories/comments/comments-query-repository";
 
@@ -35,7 +35,7 @@ commentsRouter.put('/:id', authMiddleware, isCommentOwnerMiddleware, ...contentV
 
 })
 
-commentsRouter.put('/:commentId/like-status', authMiddleware, ...commentLikesValidation, async (req: Request, res: Response) => {
+commentsRouter.put('/:commentId/like-status', authMiddleware, ...likesValidation, async (req: Request, res: Response) => {
     const user = req.user!
     const comment = req.params.commentId
     const status = req.body.likeStatus
