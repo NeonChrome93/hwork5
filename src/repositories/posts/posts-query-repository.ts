@@ -44,7 +44,7 @@ class PostsQueryRepository {
                 const newestLikes =  p.reactions.reduce((acc: NewestLikeType[] , r: StatusType):  NewestLikeType[] => {
                     if(r.status === REACTIONS_ENUM.Like){
                         acc.push({
-                            addedAt: r.createdAt,
+                            addedAt: r.createdAt.toISOString(),
                             userId: r.userId,
                             login: r.login
 
@@ -91,8 +91,9 @@ class PostsQueryRepository {
             extendedLikesInfo: {
                 likesCount: post.reactions.filter(r => r.status === REACTIONS_ENUM.Like).length,
                 dislikesCount: post.reactions.filter(r => r.status === REACTIONS_ENUM.Dislike).length,
-                myStatus: userId ? (post.reactions.filter(r => r.userId === userId) ? post.reactions.filter(r => r.userId === userId)[0].status : REACTIONS_ENUM.None) :
-                    REACTIONS_ENUM.None,
+                myStatus: userId ?
+                    (post.reactions.filter(r => r.userId === userId).length ? post.reactions.filter(r => r.userId === userId)[0].status : REACTIONS_ENUM.None)
+                    : REACTIONS_ENUM.None,
                 newestLikes: [] as NewestLikeType[]
 
             }
@@ -103,7 +104,7 @@ class PostsQueryRepository {
             const newestLikes =  post.reactions.reduce((acc: NewestLikeType[] , r: StatusType):  NewestLikeType[] => {
                 if(r.status === REACTIONS_ENUM.Like){
                     acc.push({
-                        addedAt: r.createdAt,
+                        addedAt: r.createdAt.toISOString(),
                         userId: r.userId,
                         login: r.login
 

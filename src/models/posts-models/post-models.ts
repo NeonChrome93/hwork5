@@ -13,7 +13,7 @@ export type PostType = {
 }
 
 export type NewestLikeType = {
-    "addedAt": Date,
+    "addedAt": string,
     "userId": string,
     "login": string
 }
