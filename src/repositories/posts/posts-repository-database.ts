@@ -1,6 +1,6 @@
 //import { postCollection} from "../../db/database";
 import {
-    PostOutputType,
+    PostViewType,
     PostType,
     UpdatePostType
 } from "../../models/posts-models/post-models";
@@ -9,6 +9,8 @@ import {QueryPaginationType} from "../../middlewares/pagination";
 import {PaginationModels} from "../../models/pagination/pagination-models";
 import {postDbType, PostModel} from "../../domain/entities/post-entity";
 import {FilterQuery} from "mongoose";
+import {CommentsDBType} from "../../domain/entities/comments-entity";
+import {REACTIONS_ENUM} from "../../models/comments-models/comments-models";
 
 
 export class PostRepository {
@@ -45,8 +47,9 @@ export class PostRepository {
     //}
 
 
-    async readPostId(postId: string) {
-        return  await PostModel.findOne({_id: new ObjectId(postId)}).exec();
+    async readPostId(postId: string): Promise<postDbType | null> {
+        if (!ObjectId.isValid(postId)) return null
+        return PostModel.findOne({_id: new ObjectId(postId)});
 
         // if (!post) {
         //     return null;
@@ -64,37 +67,49 @@ export class PostRepository {
         // }
     }
 
-    async createPost(newPost: PostType): Promise<PostOutputType> {
+    async createPost(newPost: PostType): Promise<PostViewType> {
 
         const res = new PostModel(newPost)
         await res.save()
         return {
             id: res._id.toString(),
-            ...newPost
+            ...newPost,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: REACTIONS_ENUM.None,
+                newestLikes: []
+            }
         }
     }
 
     async updatePosts(postId: string, newUpdateRequest: UpdatePostType): Promise<boolean> {
 
-            const res = await PostModel.updateOne({_id: new ObjectId(postId)}, {
-                $set: {
-                    title: newUpdateRequest.title, shortDescription: newUpdateRequest.shortDescription,
-                    content: newUpdateRequest.content, blogId: newUpdateRequest.blogId
-                }
-            }).exec()
-            return res.matchedCount === 1;
+        const res = await PostModel.updateOne({_id: new ObjectId(postId)}, {
+            $set: {
+                title: newUpdateRequest.title, shortDescription: newUpdateRequest.shortDescription,
+                content: newUpdateRequest.content, blogId: newUpdateRequest.blogId
+            }
+        }).exec()
+        return res.matchedCount === 1;
 
     }
 
-    async deletePosts(postId: string) :Promise<boolean> {
+    async updatePostReaction(post: postDbType) {
+        return PostModel.updateOne({_id: post._id}, {
+            $set: {...post}
+        })
+    }
 
-            try {
-                const filter = {_id: new ObjectId(postId)}
-                const res = await PostModel.deleteOne(filter).exec()
-                return res.deletedCount === 1;
-            } catch (e) {
-                return false
-            }
+    async deletePosts(postId: string): Promise<boolean> {
+
+        try {
+            const filter = {_id: new ObjectId(postId)}
+            const res = await PostModel.deleteOne(filter).exec()
+            return res.deletedCount === 1;
+        } catch (e) {
+            return false
+        }
 
 
     }
@@ -114,7 +129,7 @@ export class PostRepository {
             .exec()
 
         const totalCount = await PostModel.countDocuments(filter).exec()
-        const items  = posts.map((p:postDbType) => ({
+        const items = posts.map((p: postDbType) => ({
             id: p._id.toString(),
             title: p.title,
             shortDescription: p.shortDescription,

@@ -6,7 +6,7 @@ import {ObjectId} from "mongodb";
 
 class CommentsQueryRepository {
 
-    async readCommentByPostId(postId: string, pagination: QueryPaginationType, userId?: string | null) {
+    async readCommentByPostId(postId: string, pagination: QueryPaginationType, userId?: string | null,) {
         const filter: FilterQuery<CommentsDBType> = {postId}
         const comments = await CommentModel
             .find(filter)

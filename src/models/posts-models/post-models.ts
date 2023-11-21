@@ -1,4 +1,5 @@
 import {WithId} from "mongodb";
+import {REACTIONS_ENUM} from "../comments-models/comments-models";
 
 
 export type PostType = {
@@ -11,14 +12,26 @@ export type PostType = {
     "createdAt": string
 }
 
-export type PostOutputType = {
+export type NewestLikeType = {
+    "addedAt": Date,
+    "userId": string,
+    "login": string
+}
+
+export type PostViewType = {
     "id": string,
     "title": string,
     "shortDescription": string,
     "content": string,
     "blogId": string,
     "blogName": string,
-    "createdAt": string
+    "createdAt": string,
+    "extendedLikesInfo": {
+        likesCount: number,
+        dislikesCount: number,
+        myStatus: REACTIONS_ENUM
+        newestLikes:  NewestLikeType[]
+    }
 }
 
 export type mongoTypePost = WithId<PostType>

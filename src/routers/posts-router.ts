@@ -9,6 +9,7 @@ import {contentValidation} from "../middlewares/validations/content-validation";
 import {postsQueryRepository} from "../repositories/posts/posts-query-repository";
 import {postRepository} from "../repositories/posts/posts-repository-database";
 import {commentsQueryRepository} from "../repositories/comments/comments-query-repository";
+import {commentLikesValidation} from "../middlewares/validations/comment-likes-validation";
 
 
 export const postsRouter = Router({})
@@ -16,15 +17,17 @@ export const postsRouter = Router({})
 class PostController {
 
     async getPosts(req: Request, res: Response) {
+        const userId : string | null = req.userId
         const pagination = getQueryPagination(req.query);
-        const arr = await postsQueryRepository.readPosts(pagination);
+        const arr = await postsQueryRepository.readPosts(pagination, userId);
         res.status(200).send(arr);
     }
 
     async getPostById(req: Request, res: Response) {
         const postId = req.params.id;
+        const userId : string | null = req.userId
         console.log(postId);
-        let foundId = await postsQueryRepository.readPostId(postId);
+        let foundId = await postsQueryRepository.readPostId(postId, userId);
         if (foundId) {
             res.send(foundId);
         } else res.sendStatus(404);
@@ -38,12 +41,15 @@ class PostController {
 
     async updateLikeStatus(req:Request,res: Response) {
         const user = req.user!
-        const post = req.params.postId
+        const postId = req.params.postId
+        const post = await postRepository.readPostId(postId)
+        if(!post) return res.sendStatus(404)
         const status = req.body.likeStatus
-        // let addLikes = postService.addLikesByPost(post, user._id.toString(), status)
-        // if(!addLikes) {
-        //     res.sendStatus(404)
-        // } else res.sendStatus(204)
+        let addLikes = postService.addLikesByPost(postId, user._id.toString(), status)
+        if(!addLikes) {
+           return res.sendStatus(404)
+        }
+        return res.sendStatus(204)
     }
 
     async updatePost(req: Request, res: Response) {
@@ -82,7 +88,7 @@ class PostController {
 
         const userId = req.user!._id.toString();
         const userLogin = req.user!.login;
-        const newComment = await commentService.createComment(post.id.toString(), userId, userLogin, req.body.content);
+        const newComment = await commentService.createComment(post._id.toString(), userId, userLogin, req.body.content);
         return res.status(201).send(newComment);
     }
 
@@ -90,15 +96,15 @@ class PostController {
 
 const postControllerInstance = new PostController();
 
-postsRouter.get('/', postControllerInstance.getPosts)
+postsRouter.get('/',  getUserMiddleware, postControllerInstance.getPosts)
 
-postsRouter.get('/:id', postControllerInstance.getPostById)
+postsRouter.get('/:id',  getUserMiddleware, postControllerInstance.getPostById)
 
 postsRouter.post('/',
     authGuardMiddleware,
     ...validationCreateUpdatePost, postControllerInstance.createPosts)
 
-postsRouter.put('/:postId/like-status', postControllerInstance.updateLikeStatus)
+postsRouter.put('/:postId/like-status', authMiddleware, ...commentLikesValidation, postControllerInstance.updateLikeStatus)
 
 postsRouter.put('/:id',
     authGuardMiddleware,
