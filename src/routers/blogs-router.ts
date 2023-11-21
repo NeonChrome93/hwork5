@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {blogService} from "../domain/blog-service";
-import {authGuardMiddleware} from "../middlewares/auth";
+import {authGuardMiddleware, getUserMiddleware} from "../middlewares/auth";
 import {validationCreateUpdateBlog} from "../middlewares/validations/blogs-validation";
 import {Blog} from "../models/blogs-models/blogs-models";
 import {getQueryPagination} from "../middlewares/pagination";
@@ -53,10 +53,11 @@ class BlogController {
 
     async getPostByBlogId(req: Request, res: Response) {
         const blogId = req.params.id
+        const userId = req.userId
         const pagination = getQueryPagination(req.query)
         const blog = await blogRepository.readBlogsId(blogId)
         if (!blog) return res.sendStatus(404)
-        const arr = await postRepository.readPostsByBlogId(blogId, pagination); //servis
+        const arr = await blogQueryRepository.readPostsByBlogId(blogId, pagination, userId); //servis
         return res.status(200).send(arr)
     }
 
@@ -81,7 +82,7 @@ blogsRouter.put('/:id', authGuardMiddleware, ...validationCreateUpdateBlog, blog
 
 blogsRouter.delete('/:id',  authGuardMiddleware, blogControllerInstance.deleteBlog)
 
-blogsRouter.get('/:id/posts',blogControllerInstance.getPostByBlogId)
+blogsRouter.get('/:id/posts', getUserMiddleware, blogControllerInstance.getPostByBlogId)
 
 blogsRouter.post('/:id/posts', authGuardMiddleware, ...validationCreatePostWithoutBlogId, blogControllerInstance.createPostByBlogId)
 

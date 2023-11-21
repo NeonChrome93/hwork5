@@ -9,7 +9,7 @@ import {contentValidation} from "../middlewares/validations/content-validation";
 import {postsQueryRepository} from "../repositories/posts/posts-query-repository";
 import {postRepository} from "../repositories/posts/posts-repository-database";
 import {commentsQueryRepository} from "../repositories/comments/comments-query-repository";
-import {commentLikesValidation} from "../middlewares/validations/comment-likes-validation";
+import {likesValidation} from "../middlewares/validations/likes-validation";
 
 
 export const postsRouter = Router({})
@@ -77,7 +77,7 @@ class PostController {
         if (!post) {
             return res.sendStatus(404);
         }
-        const comment = await commentsQueryRepository.readCommentByPostId(postId, pagination, userId ? userId : null);
+        const comment = await commentsQueryRepository.readCommentByPostId(postId, pagination, userId);
         if (!comment) return res.sendStatus(404);
         return res.status(200).send(comment);
     }
@@ -104,7 +104,7 @@ postsRouter.post('/',
     authGuardMiddleware,
     ...validationCreateUpdatePost, postControllerInstance.createPosts)
 
-postsRouter.put('/:postId/like-status', authMiddleware, ...commentLikesValidation, postControllerInstance.updateLikeStatus)
+postsRouter.put('/:postId/like-status', authMiddleware, ...likesValidation, postControllerInstance.updateLikeStatus)
 
 postsRouter.put('/:id',
     authGuardMiddleware,
