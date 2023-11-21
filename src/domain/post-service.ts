@@ -37,8 +37,9 @@ export class PostService {
         if (!reactions) {
             post.reactions.push({ userId, status, createdAt: new Date(), login: user!.login})
         } else {
-           reactions.userId = userId
+           //reactions.userId = userId
            reactions.createdAt = new Date()
+           reactions.status = status
            post.reactions.map((r) => r.userId === userId ? {...r, ...reactions} : r )
             // Таким образом, строка кода обновляет массив реакций комментария,
             //     заменяя существующую реакцию пользователя на новую реакцию, если идентификаторы пользователей совпадают.
