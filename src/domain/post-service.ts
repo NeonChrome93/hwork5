@@ -34,8 +34,11 @@ export class PostService {
         let user = await usersRepository.readUserById(userId.toString())
         if (!post) return false
         const reactions = post.reactions.find(r => r.userId == userId)
+
         if (!reactions) {
+
             post.reactions.push({ userId, status, createdAt: new Date(), login: user!.login})
+console.log('reaction:',post.reactions[0])
         } else {
            //reactions.userId = userId
            reactions.createdAt = new Date()

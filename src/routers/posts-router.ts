@@ -29,7 +29,7 @@ class PostController {
         console.log(postId);
         let foundId = await postsQueryRepository.readPostId(postId, userId);
         if (foundId) {
-            res.send(foundId);
+            res.status(200).send(foundId);
         } else res.sendStatus(404);
     }
 
@@ -45,7 +45,7 @@ class PostController {
         const post = await postRepository.readPostId(postId)
         if(!post) return res.sendStatus(404)
         const status = req.body.likeStatus
-        let addLikes = postService.addLikesByPost(postId, user._id.toString(), status)
+        let addLikes = await postService.addLikesByPost(postId, user._id.toString(), status)
         if(!addLikes) {
            return res.sendStatus(404)
         }

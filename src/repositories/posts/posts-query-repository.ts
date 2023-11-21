@@ -106,7 +106,8 @@ class PostsQueryRepository {
                     acc.push({
                         addedAt: r.createdAt.toISOString(),
                         userId: r.userId,
-                        login: r.login
+                        login: r.login,
+
 
                     } );
                 }
