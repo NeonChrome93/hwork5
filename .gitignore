@@ -1,5 +1,6 @@
 /dist
 /node-modules
+/.idea
 # Project exclude paths
 /_tests_/blog-tests.js
 /_tests_/post-tests.js
