@@ -1,16 +1,13 @@
-import e, {Request, Response, Router} from "express";
-import {userService} from "../domain/users-service";
+import  {Request, Response, Router} from "express";
 import {validationLoginAuth} from "../middlewares/validations/auth-logiin-validation";
 import {jwtService} from "../application/jwt-service";
 import {authMiddleware, checkRefreshToken} from "../middlewares/auth";
-import {validationCreateUser} from "../middlewares/validations/user-create-validation";
 import {authService} from "../domain/auth-service";
 import nodemailer from "nodemailer";
 import {confirmationCodeValidator} from "../middlewares/validations/confirmation-code-validator";
 import {usersRepository} from "../repositories/users/users-repository-database";
 import {confirmationEmailValidation} from "../middlewares/validations/confirmation-email-validation";
 import {userRegistrationEmailValidation} from "../middlewares/validations/user-registration-email-validation";
-import {randomUUID} from "crypto";
 import {devicesService} from "../domain/devices-service";
 import {devicesRepository} from "../repositories/devices/devices-repository";
 //import {devicesCollection} from "../db/database";
@@ -119,8 +116,8 @@ authRouter.post('/new-password', countApiRequests, ...userNewPasswordValidation,
 
 
 authRouter.post('/registration-email-resending', countApiRequests, ...confirmationEmailValidation, async (req: Request, res: Response) => {
-    const receivedСode = await authService.resendingCode(req.body.email)
-    if (receivedСode) return res.sendStatus(204)
+    const receivedCode = await authService.resendingCode(req.body.email)
+    if (receivedCode) return res.sendStatus(204)
 
     return res.sendStatus(400)
 //юзеру может не прийти код, сгенерировать новый,записать в базу,  переслать код еще раз по емайл новый код

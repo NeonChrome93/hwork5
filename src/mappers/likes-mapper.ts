@@ -2,7 +2,7 @@ import {REACTIONS_ENUM} from "../models/comments-models/comments-models";
 import {NewestLikeType} from "../models/posts-models/post-models";
 import {postDbType, StatusType} from "../domain/entities/post-entity";
 
-export function likesMapper(p: postDbType,  userId?: string | null) {
+export function likesMapper(p: postDbType, userId?: string | null) {
     const result = {
         id: p._id.toString(),
         title: p.title,
